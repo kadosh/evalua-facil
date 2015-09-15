@@ -2,6 +2,11 @@ var bookshelf = require('./bookshelf');
 var Checkit = require('checkit');
 
 (function() {
+	
+	module.exports.Allocation = bookshelf.Model.extend({
+		tableName : 'allocations'
+	});
+	
 	module.exports.User = bookshelf.Model.extend({
 		tableName : 'users',
 		roles : function() {
@@ -19,7 +24,7 @@ var Checkit = require('checkit');
 			return this.validate.run(this.attributes)
 		},
 		role : function() {
-			return this.hasOne(Role);
+			return this.belongsTo(module.exports.Role);
 		}
 	// messages : function() {
 	// return this.hasMany(Posts);
@@ -33,10 +38,10 @@ var Checkit = require('checkit');
 	module.exports.FacultyMember = bookshelf.Model.extend({
 		tableName : 'faculty_members',
 		allocations : function() {
-			return this.hasMany(Allocation)
+			return this.hasMany(module.exports.Allocation);
 		},
 		user : function() {
-			return this.hasOne(User);
+			return this.belongsTo(module.exports.User);
 		},
 		validate : new Checkit({
 			first_name : 'required',
@@ -53,38 +58,37 @@ var Checkit = require('checkit');
 		}
 	});
 
-	module.exports.Allocation = bookshelf.Model.extend({
-		tableName : 'allocations'
-	});
-
 	module.exports.Subject = bookshelf.Model.extend({
 		tableName : 'subjects',
 		allocations : function() {
-			return this.hasMany(Allocation);
+			return this.hasMany(module.exports.Allocation);
 		}
 	});
 
 	module.exports.SchoolGroup = bookshelf.Model.extend({
 		tableName : 'school_groups',
 		allocations : function() {
-			return this.hasMany(Allocation);
+			return this.hasMany(module.exports.Allocation);
+		},
+		grade : function(){
+			return this.belongsTo(module.exports.Grade);
 		}
 	});
 
 	module.exports.Grade = bookshelf.Model.extend({
 		tableName : 'grades',
 		schoolGroups : function() {
-			return this.hasMany(SchoolGroup);
+			return this.hasMany(module.exports.SchoolGroup);
 		},
 		subjects : function() {
-			return this.hasMany(Subject);
+			return this.hasMany(module.exports.Subject);
 		}
 	});
 
 	module.exports.Revision = bookshelf.Model.extend({
 		tableName : 'revisions',
 		details : function() {
-			return this.hasMany(RevisionDetail);
+			return this.hasMany(module.exports.RevisionDetail);
 		}
 	});
 
@@ -99,7 +103,7 @@ var Checkit = require('checkit');
 	module.exports.IndicatorCategory = bookshelf.Model.extend({
 		tableName : 'indicator_categories',
 		indicators : function() {
-			return this.hasMany(Indicator);
+			return this.hasMany(module.exports.Indicator);
 		}
 	});
 
@@ -112,5 +116,29 @@ var Checkit = require('checkit');
 
 	module.exports.AltRevisionDetail = bookshelf.Model.extend({
 		tableName : 'alt_revision_details'
+	});
+	
+	module.exports.Client = bookshelf.Model.extend({
+		tableName : 'clients'
+	});
+	
+	module.exports.AccessToken = bookshelf.Model.extend({
+		tableName : 'access_tokens',
+		user : function(){
+			return this.belongsTo(module.exports.User);
+		},
+		client : function(){
+			return this.belongsTo(module.exports.Client);
+		}
+	});
+	
+	module.exports.RefreshToken = bookshelf.Model.extend({
+		tableName : 'refresh_tokens',
+		user : function(){
+			return this.belongsTo(module.exports.User);
+		},
+		client : function(){
+			return this.belongsTo(module.exports.Client);
+		}
 	});
 })();

@@ -1,23 +1,25 @@
 // elsewhere, to use the bookshelf client:
 var dbContext = require('../db/models');
 
-exports.getGrades = function(req, res){
-	new dbContext.Grade().fetchAll()
-    .then(function(grades) {
-      res.send(grades.toJSON());
-    }).catch(function(error) {
-      console.log(error);
-      res.send('An error occured');
-    });
-};
+(function(){
+	exports.getGrades = function(req, res){
+		dbContext.Grade
+			.forge()
+			.fetchAll()
+			.then(function(grades) {
+			  res.send(grades.toJSON());
+			}).catch(function(error) {
+			  res.send('An error occured');
+			});
+	};
 
-exports.getGrade = function(req, res) {
-	var model = new dbContext.Grade();
-	
-	model
-	  .query({where: { grade_number: req.params.grade_number }})
-	  .fetch()
-	  .then(function(grade) {
-		    res.json(grade);
-	  });
-};
+	exports.getGrade = function(req, res) {
+
+		dbContext.Grade
+			.forge( { grade_number : req.params.grade_number } )
+			.fetch()
+			.then(function(grade){
+				res.json(grade);
+			});
+	};
+});
