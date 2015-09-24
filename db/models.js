@@ -4,7 +4,17 @@ var Checkit = require('checkit');
 (function() {
 	
 	module.exports.Allocation = bookshelf.Model.extend({
-		tableName : 'allocations'
+		tableName : 'allocations',
+		subject : function(){
+			return this.belongsTo(module.exports.Subject);
+		},
+		group : function(){
+			return this.belongsTo(module.exports.SchoolGroup);
+		}
+	});
+	
+	module.exports.Bimester = bookshelf.Model.extend({
+		tableName : 'bimesters'
 	});
 	
 	module.exports.User = bookshelf.Model.extend({
@@ -62,6 +72,9 @@ var Checkit = require('checkit');
 		tableName : 'subjects',
 		allocations : function() {
 			return this.hasMany(module.exports.Allocation);
+		},
+		grade : function(){
+			return this.belongsTo(module.exports.Grade);
 		}
 	});
 
@@ -72,6 +85,17 @@ var Checkit = require('checkit');
 		},
 		grade : function(){
 			return this.belongsTo(module.exports.Grade);
+		},
+		validate : new Checkit({
+			group_name : 'required',
+			grade_id : 'required',
+			total_students : 'required'
+		}),
+		initialize : function() {
+			this.on('saving', this.validateSave);
+		},
+		validateSave : function() {
+			return this.validate.run(this.attributes);
 		}
 	});
 

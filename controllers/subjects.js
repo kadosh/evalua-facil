@@ -1,16 +1,15 @@
 // elsewhere, to use the bookshelf client:
 var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
-var Checkit = require('checkit');
 
 (function(){
-	exports.getGroups = function(req, res){
+	exports.getSubjects = function(req, res){
 
-		dbContext.SchoolGroup
+		dbContext.Subject
 			.query(function (q) {
 				q.distinct()
 					.innerJoin('grades', function () {
-						this.on('school_groups.grade_id', '=', 'grades.id')
+						this.on('subjects.grade_id', '=', 'grades.id')
 							.andOn('grades.grade_number', '=', parseInt(req.params.grade_number))
 					});
 					
@@ -18,30 +17,32 @@ var Checkit = require('checkit');
 			})
 			.fetchAll()
 			.then(function(groups) {
-				res.send(groups.toJSON());
+				res.send(groups.omit('grade_id').toJSON());
 			}).catch(function(error) {
+				console.log(error);
 				res.send('An error occured');
 			});
 	};
 	
-	exports.putGroup = function(req, res, next){
+	exports.putSubject = function(req, res, next){
 
-		dbContext.SchoolGroup
+		dbContext.Subject
 			.query(function (q) {
 				q.distinct()
 					.innerJoin('grades', function () {
-						this.on('school_groups.grade_id', '=', 'grades.id')
+						this.on('subjects.grade_id', '=', 'grades.id')
 							.andOn('grades.grade_number', '=', parseInt(req.body.grade_number))
 					})
-					.where('school_groups.group_name', req.body.group_name);
+					.where('subjects.abbreviation', req.body.abbreviation);
 					
 				return q;
 			})
 			.fetch()
-			.then(function(schoolGroup) {
+			.then(function(subject) {
 				
-				if (schoolGroup){
-					throw new Errors.EntityExistsError("The school group already exists");
+				// If the subject exists then throw an error
+				if (subject){
+					throw new Errors.EntityExistsError("The subject already exists");
 				}
 				
 				// Find grade reference
@@ -56,28 +57,18 @@ var Checkit = require('checkit');
 							throw new Errors.InvalidGrade();
 						}
 						
-						// TODO: Validate the grade_number is not null
-						
-						// Proceed to create the Group
-						return dbContext.SchoolGroup
+						// Proceed to create the subject
+						return dbContext.Subject
 							.forge()
 							.save({
 								grade_id : grade.get('id'),
-								group_name : req.body.group_name,
-								total_students : req.body.total_students
+								abbreviation : req.body.abbreviation,
+								title : req.body.title
 							})
-							.then(function(group){
-								res.json(group);
+							.then(function(subject){
+								res.json(subject);
 							});
 					});
-			})
-			.catch(Checkit.Error, function(err) { 							
-				// Do something with error
-				res.status(500).json({
-					error : true,
-					message : err.message,
-					detail: err
-				});
 			})
 			.catch(function(error) {
 				// Do something with error

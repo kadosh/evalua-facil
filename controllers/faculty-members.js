@@ -17,8 +17,6 @@ var async = require('async');
 	exports.putFacultyMember = function(req, res){
 		async.waterfall([
  			function(callback){
- 				console.log("first: ");
- 				
  				// 1. Validate username
  				console.log("req.body.username: ", req.body.username);
  				

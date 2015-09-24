@@ -5,7 +5,14 @@ var session = require('express-session');
 var passport = require('passport');
 var facultyMembersController = require('./controllers/faculty-members');
 var accountController = require('./controllers/account');
+var gradesController = require('./controllers/grades');
+var allocationsController = require('./controllers/allocations');
+var bimestersController = require('./controllers/bimesters');
+var revisionsController = require('./controllers/revisions');
+var testController = require('./controllers/test');
+
 var schoolGroupsController = require('./controllers/school-groups');
+var subjectsController = require('./controllers/subjects');
 var oauthStrategies = require('./controllers/oauth-strategies');
 var oauthServer = require('./controllers/oauth2-server');
 
@@ -41,11 +48,39 @@ router.route('/api/faculty-members')
 router.route('/api/account/me')
 	.get(oauthStrategies.isBearerAuthenticated, accountController.getMe);
 
+	// Api endpoints for School Groups
 router.route('/api/school-groups/:grade_number')
 	.get(oauthStrategies.isBearerAuthenticated, schoolGroupsController.getGroups);
+router.route('/api/school-groups/')
+	.put(oauthStrategies.isBearerAuthenticated, schoolGroupsController.putGroup);
 	
+	// Api endpoints for Subjects
+router.route('/api/subjects/:grade_number')
+	.get(oauthStrategies.isBearerAuthenticated, subjectsController.getSubjects);
 	
+router.route('/api/subjects')
+	.put(oauthStrategies.isBearerAuthenticated, subjectsController.putSubject);
 
+	// Api endpoints for Grades
+router.route('/api/grades')
+	.get(oauthStrategies.isBearerAuthenticated, gradesController.getGrades)
+	.put(oauthStrategies.isBearerAuthenticated, gradesController.putGrade);
+
+	// Api endpoints for Allocations
+router.route('/api/allocations')
+	.put(oauthStrategies.isBearerAuthenticated, allocationsController.putAllocation);
+
+	// Api endpoints for Bimesters
+router.route('/api/bimesters')
+	.put(oauthStrategies.isBearerAuthenticated, bimestersController.putBimester);
+	
+	// Api endpoints for Revisions
+router.route('/api/revisions/me/pending')
+	.get(oauthStrategies.isBearerAuthenticated, revisionsController.getMePendingRevisions);
+
+router.route('/api/testing')
+	.get(testController.get);
+	
 // Register all our routes
 app.use(router);
 
