@@ -10,16 +10,20 @@ var ERROR_TYPES = {};
 			.forge({
 				user_id : req.user.get('id')
 			})
-			.fetch({withRelated: ['allocations.group', 'allocations.subject', 'user.role']})
+			.fetch({withRelated: ['allocations.group', 'allocations.subject', 'user.role', 'allocations.group.grade']})
 			.then(function(facultyMemberModel){
 				
 				var allocationsModel = facultyMemberModel.related('allocations');
 				var allocations = [];
 				allocationsModel.forEach(function(alloc){
+					var group = alloc.related('group');
+					var grade = group.related('grade');
+					
 					allocations.push({
 						id : alloc.get('id'),
 						subject : alloc.related('subject').omit(['grade_id']),
-						group : alloc.related('group').omit(['grade_id'])
+						group : alloc.related('group').omit(['grade_id']),
+						grade : grade
 					})
 				});
 				
