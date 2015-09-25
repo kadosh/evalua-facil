@@ -5,7 +5,7 @@ var Errors = require('../utils/custom-errors');
 (function(){
 	exports.getSubjects = function(req, res){
 
-		dbContext.Subject
+		return dbContext.Subject
 			.query(function (q) {
 				q.distinct()
 					.innerJoin('grades', function () {
@@ -16,8 +16,8 @@ var Errors = require('../utils/custom-errors');
 				return q;
 			})
 			.fetchAll()
-			.then(function(groups) {
-				res.send(groups.omit('grade_id').toJSON());
+			.then(function(subjects) {
+				res.send(subjects.toJSON());
 			}).catch(function(error) {
 				console.log(error);
 				res.send('An error occured');

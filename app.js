@@ -78,8 +78,8 @@ router.route('/api/bimesters')
 router.route('/api/revisions/me/pending')
 	.get(oauthStrategies.isBearerAuthenticated, revisionsController.getMePendingRevisions);
 
-router.route('/api/testing')
-	.get(testController.get);
+//router.route('/api/testing')
+//	.get(testController.get);
 	
 // Register all our routes
 app.use(router);
