@@ -11,11 +11,22 @@ var repos = require('../db/repositories');
 	};
 	
 	TestHandler.prototype.get = function (req, res){
-		return that.gradeRepository
-			.findByNumber(1)
-			.then(function(grade){
-				console.log(grade);
+
+		var gradePromise = that.gradeRepository.findByNumber(1);
+			
+		gradePromise.then(function(grade){
+				if(!grade){
+					throw new Errors.NotFoundEntity();
+				}
+		})
+		.catch(function(error){
+			res.status(500).json({
+				error : true,
+				data : {
+					message : error.message
+				}
 			});
+		});
 	};
 	
 	var handler = new TestHandler();

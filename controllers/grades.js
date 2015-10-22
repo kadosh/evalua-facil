@@ -15,7 +15,6 @@ var Errors = require('../utils/custom-errors');
 	};
 
 	exports.getGrade = function(req, res) {
-
 		dbContext.Grade
 			.forge( { grade_number : req.params.grade_number } )
 			.fetch()

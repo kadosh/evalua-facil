@@ -84,7 +84,6 @@ passport.use("accessToken", new BearerStrategy(
 					accessTokenModel
 						.destroy()
 						.then(function(){
-							console.log("Destroyed");
 							return done(null, false);
 						})
 						.catch(function(err){
@@ -96,9 +95,8 @@ passport.use("accessToken", new BearerStrategy(
 						.forge({
 							id : accessTokenModel.get('user_id')
 						})
-						.fetch()
+						.fetch({withRelated: ['facultyMember', 'role']})
 						.then(function(user){
-							
 							// Here load user profile
 							var info = { scope: '*' };
 							done(null, user, info);

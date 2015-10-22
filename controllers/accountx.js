@@ -1,13 +1,18 @@
 // elsewhere, to use the bookshelf client:
 var dbContext = require('../db/models');
-var bookshelf = require('../db/bookshelf');
-
-var ERROR_TYPES = {};
+var Errors = require('../utils/custom-errors');
+var repos = require('../db/repositories');
+var bcrypt = require('bcryptjs');
 
 (function(){
-	exports.getMe = function(req, res){
-
-		dbContext.FacultyMember
+	var that;
+	
+	var AccountHandler = function () {
+		that = this;
+	};
+	
+	AccountHandler.prototype.getMe = function(req, res){
+		return dbContext.FacultyMember
 			.forge({
 				user_id : req.user.get('id')
 			})
@@ -25,7 +30,7 @@ var ERROR_TYPES = {};
 						subject : alloc.related('subject').omit(['grade_id']),
 						group : alloc.related('group').omit(['grade_id']),
 						grade : grade
-					})
+					});
 				});
 				
 				res.json({
@@ -46,4 +51,8 @@ var ERROR_TYPES = {};
 				});
 			});
 	};
+	
+	var handler = new AccountHandler();
+	
+	module.exports.getMe = handler.getMe;
 })();
