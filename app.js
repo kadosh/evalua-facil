@@ -3,16 +3,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
-var facultyMembersController = require('./controllers/faculty-members');
-var accountController = require('./controllers/account');
-var gradesController = require('./controllers/grades');
-var allocationsController = require('./controllers/allocations');
+var facultyMembersController = require('./controllers/faculty-membersx');
+var accountController = require('./controllers/accountx');
+var gradesController = require('./controllers/gradesx');
+var allocationsController = require('./controllers/allocationsx');
 var bimestersController = require('./controllers/bimesters');
-var revisionsController = require('./controllers/revisions');
+var revisionsController = require('./controllers/revisionsx');
 var testController = require('./controllers/test');
 
-var schoolGroupsController = require('./controllers/school-groups');
-var subjectsController = require('./controllers/subjects');
+var schoolGroupsController = require('./controllers/school-groupsx');
+var subjectsController = require('./controllers/subjectsx');
 var oauthStrategies = require('./controllers/oauth-strategies');
 var oauthServer = require('./controllers/oauth2-server');
 
@@ -43,32 +43,45 @@ router.route('/oauth/token')
 	
 router.route('/api/faculty-members')
 	.get(oauthStrategies.isBearerAuthenticated, facultyMembersController.getAll)
-	.put(oauthStrategies.isBearerAuthenticated, facultyMembersController.putFacultyMember);
+	.put(oauthStrategies.isBearerAuthenticated, facultyMembersController.put);
+	
+router.route('/api/faculty-members/:faculty_member_id')
+	.get(oauthStrategies.isBearerAuthenticated, facultyMembersController.getOne)
+	.put(oauthStrategies.isBearerAuthenticated, facultyMembersController.update);
 	
 router.route('/api/account/me')
 	.get(oauthStrategies.isBearerAuthenticated, accountController.getMe);
 
 	// Api endpoints for School Groups
-router.route('/api/school-groups/:grade_number')
-	.get(oauthStrategies.isBearerAuthenticated, schoolGroupsController.getGroups);
+router.route('/api/school-groups/in-grade-number/:grade_number')
+	.get(oauthStrategies.isBearerAuthenticated, schoolGroupsController.getAllByGradeNumber);
 router.route('/api/school-groups/')
-	.put(oauthStrategies.isBearerAuthenticated, schoolGroupsController.putGroup);
+	.put(oauthStrategies.isBearerAuthenticated, schoolGroupsController.put);
+router.route('/api/school-groups/:group_id')
+	.put(oauthStrategies.isBearerAuthenticated, schoolGroupsController.update);
 	
 	// Api endpoints for Subjects
-router.route('/api/subjects/:grade_number')
-	.get(oauthStrategies.isBearerAuthenticated, subjectsController.getSubjects);
+router.route('/api/subjects/in-grade-number/:grade_number')
+	.get(oauthStrategies.isBearerAuthenticated, subjectsController.getAllByGradeNumber);
 	
 router.route('/api/subjects')
-	.put(oauthStrategies.isBearerAuthenticated, subjectsController.putSubject);
+	.put(oauthStrategies.isBearerAuthenticated, subjectsController.put);
+	
+router.route('/api/subjects/:subject_id')
+	.put(oauthStrategies.isBearerAuthenticated, subjectsController.update);
 
 	// Api endpoints for Grades
 router.route('/api/grades')
-	.get(oauthStrategies.isBearerAuthenticated, gradesController.getGrades)
-	.put(oauthStrategies.isBearerAuthenticated, gradesController.putGrade);
+	.get(oauthStrategies.isBearerAuthenticated, gradesController.getAll)
+	.put(oauthStrategies.isBearerAuthenticated, gradesController.put);
+	
+router.route('/api/grades/:grade_number')
+	.get(oauthStrategies.isBearerAuthenticated, gradesController.getOne)
+	.put(oauthStrategies.isBearerAuthenticated, gradesController.update);
 
 	// Api endpoints for Allocations
 router.route('/api/allocations')
-	.put(oauthStrategies.isBearerAuthenticated, allocationsController.putAllocation);
+	.put(oauthStrategies.isBearerAuthenticated, allocationsController.put);
 
 	// Api endpoints for Bimesters
 router.route('/api/bimesters')
@@ -76,10 +89,15 @@ router.route('/api/bimesters')
 	
 	// Api endpoints for Revisions
 router.route('/api/revisions/me/pending')
-	.get(oauthStrategies.isBearerAuthenticated, revisionsController.getMePendingRevisions);
+	//.get(oauthStrategies.isBearerAuthenticated, revisionsController.getMePendingRevisions)
+	.put(oauthStrategies.isBearerAuthenticated, revisionsController.put);
+	
+// router.route('/api/revisions/:revision_id')
+	// .get(oauthStrategies.isBearerAuthenticated, revisionsController.getOne)
+	// .put(oauthStrategies.isBearerAuthenticated, revisionsController.put);
 
-//router.route('/api/testing')
-//	.get(testController.get);
+router.route('/api/testing')
+	.get(testController.getTest);
 	
 // Register all our routes
 app.use(router);

@@ -25,5 +25,21 @@
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "passport-oauth2-client-password": "^0.1.2"
-  }
+  },
+  "main": "./app.js",
+    "author": {
+        "name": "Alex Ocampo",
+        "email": "kadosh.ivan@gmail.com"
+    },
+    "keywords": [],
+    "licenses": {
+        "type": "mit"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/YOUR_LOGIN/Hello World.git"
+    },
+    "bugs": {
+        "url": "http://github.com/YOUR_LOGIN/Hello World/issues"
+    }
 }

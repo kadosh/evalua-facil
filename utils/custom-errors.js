@@ -43,4 +43,37 @@
 	InvalidBimester.prototype.constructor = InvalidBimester;
 	
 	module.exports.InvalidBimester = InvalidBimester;
+	
+	function RevisionIsDone(message) {
+	  this.name = 'RevisionIsDone';
+	  this.message = message || "The revision is already done and the platform can't receive any other requests";
+	  this.stack = (new Error()).stack;
+	}
+
+	RevisionIsDone.prototype = Object.create(Error.prototype);
+	RevisionIsDone.prototype.constructor = RevisionIsDone;
+	
+	module.exports.RevisionIsDone = RevisionIsDone;
+	
+	function UsernameAlreadyInUseError(message) {
+	  this.name = 'UsernameAlreadyInUseError';
+	  this.message = message || "The provided username already exists.";
+	  this.stack = (new Error()).stack;
+	}
+
+	UsernameAlreadyInUseError.prototype = Object.create(Error.prototype);
+	UsernameAlreadyInUseError.prototype.constructor = UsernameAlreadyInUseError;
+	
+	module.exports.UsernameAlreadyInUseError = UsernameAlreadyInUseError;
+	
+	function InvalidOperationError(message) {
+	  this.name = 'InvalidOperationError';
+	  this.message = message || "Invalid Operation Error.";
+	  this.stack = (new Error()).stack;
+	}
+
+	InvalidOperationError.prototype = Object.create(Error.prototype);
+	InvalidOperationError.prototype.constructor = InvalidOperationError;
+	
+	module.exports.InvalidOperationError = InvalidOperationError;
 })();

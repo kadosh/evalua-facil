@@ -3,6 +3,8 @@ var Checkit = require('checkit');
 
 (function() {
 	
+	module.exports.Bookshelf = bookshelf;
+	
 	module.exports.Allocation = bookshelf.Model.extend({
 		tableName : 'allocations',
 		subject : function(){
@@ -27,6 +29,9 @@ var Checkit = require('checkit');
 			password_hash : 'required',
 			role_id : 'required'
 		}),
+		facultyMember : function(){
+			return this.hasOne(module.exports.FacultyMember);
+		},
 		initialize : function() {
 			this.on('saving', this.validateSave);
 		},
@@ -53,18 +58,30 @@ var Checkit = require('checkit');
 		user : function() {
 			return this.belongsTo(module.exports.User);
 		},
-		validate : new Checkit({
+		createValidation : new Checkit({
 			first_name : 'required',
 			last_name : 'required',
 			title : 'required',
 			email : 'email',
 			user_id : 'required'
 		}),
+		updateValidation : new Checkit({
+			first_name : 'required',
+			last_name : 'required',
+			title : 'required',
+			email : 'email'
+		}),
 		initialize : function() {
-			this.on('saving', this.validateSave);
+			this.on('creating', this.validateCreate);
+			this.on('updating', this.validateUpdate);
 		},
-		validateSave : function() {
-			return this.validate.run(this.attributes);
+		validateCreate : function() {
+			console.log("Runned CREATE");
+			return this.createValidation.run(this.attributes);
+		},
+		validateUpdate : function() {
+			console.log("Runned UPDATE");
+			return this.updateValidation.run(this.attributes);
 		}
 	});
 
@@ -85,17 +102,6 @@ var Checkit = require('checkit');
 		},
 		grade : function(){
 			return this.belongsTo(module.exports.Grade);
-		},
-		validate : new Checkit({
-			group_name : 'required',
-			grade_id : 'required',
-			total_students : 'required'
-		}),
-		initialize : function() {
-			this.on('saving', this.validateSave);
-		},
-		validateSave : function() {
-			return this.validate.run(this.attributes);
 		}
 	});
 
@@ -111,6 +117,12 @@ var Checkit = require('checkit');
 
 	module.exports.Revision = bookshelf.Model.extend({
 		tableName : 'revisions',
+		allocation : function(){
+			return this.belongsTo(module.exports.Allocation);
+		},
+		bimester : function(){
+			return this.belongsTo(module.exports.Bimester);
+		},
 		details : function() {
 			return this.hasMany(module.exports.RevisionDetail);
 		}
@@ -133,8 +145,14 @@ var Checkit = require('checkit');
 
 	module.exports.AltRevision = bookshelf.Model.extend({
 		tableName : 'alt_revisions',
+		allocation : function(){
+			return this.belongsTo(module.exports.Allocation);
+		},
+		bimester : function(){
+			return this.belongsTo(module.exports.Bimester);
+		},
 		details : function() {
-			return this.hasMany(AltRevisionDetail);
+			return this.hasMany(module.exports.AltRevisionDetail);
 		}
 	});
 
