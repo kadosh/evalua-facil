@@ -86,7 +86,7 @@ router.route('/api/allocations/faculty-member/:faculty_member_id')
 	.get(oauthStrategies.isBearerAuthenticated, allocationsController.getForFacultyMember);
 
 router.route('/api/allocations/available')
-    .get(oauthStrategies.isBearerAuthenticated, allocationsController.getAvailable);
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher"]), allocationsController.getAvailable);
 
 	// Api endpoints for Bimesters
 router.route('/api/bimesters')
