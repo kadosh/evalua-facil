@@ -80,8 +80,13 @@ router.route('/api/grades/:grade_number')
 	.put(oauthStrategies.isBearerAuthenticated, gradesController.update);
 
 	// Api endpoints for Allocations
-router.route('/api/allocations')
-	.put(oauthStrategies.isBearerAuthenticated, allocationsController.put);
+router.route('/api/allocations/faculty-member/:faculty_member_id')
+    .put(oauthStrategies.isBearerAuthenticated, allocationsController.put)
+    .delete(oauthStrategies.isBearerAuthenticated, allocationsController.deleteForFacultyMember)
+	.get(oauthStrategies.isBearerAuthenticated, allocationsController.getForFacultyMember);
+
+router.route('/api/allocations/available')
+    .get(oauthStrategies.isBearerAuthenticated, allocationsController.getAvailable);
 
 	// Api endpoints for Bimesters
 router.route('/api/bimesters')

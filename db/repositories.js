@@ -4,6 +4,28 @@ var Errors = require('../utils/custom-errors');
 (function(){
     
 	/**
+	 * Evaluation Repository
+	 *
+	 */	 
+	var that;
+	var EvaluationRepository = function () { 
+		that = this;
+	};
+	
+	EvaluationRepository.prototype.getOne = function(query, options){
+        options = options || {};
+        
+		return dbContext.Evaluation
+			.forge(query)
+			.fetch(options);
+	};
+    
+    module.exports.EvaluationRepository = EvaluationRepository;
+})();
+
+(function(){
+    
+	/**
 	 * Grade Repository
 	 *
 	 */	 
@@ -67,6 +89,13 @@ var Errors = require('../utils/custom-errors');
 		return dbContext.SchoolGroup
 			.forge({ id : group_id })
 			.fetch();
+	};
+    
+    GroupRepository.prototype.getAll = function(query, options){
+        options = options || {};
+		return dbContext.SchoolGroup
+			.forge(query)
+			.fetchAll(options);
 	};
 	
 	GroupRepository.prototype.getByGradeNumberAndName = function(grade_number, name){
@@ -208,18 +237,31 @@ var Errors = require('../utils/custom-errors');
 			.forge(query)
 			.fetch(options);
 	};
+    
+    AllocationRepository.prototype.getAll = function(query, options){
+		options = options || {};
+		return dbContext.Allocation
+			.forge(query)
+			.fetchAll(options);
+	};
 	
 	AllocationRepository.prototype.insert = function(data, saveOptions){
 		saveOptions = saveOptions || {};
 		return dbContext.Allocation
 			.forge({
-				school_group_id : data.group_id,
+				school_group_id : data.school_group_id,
 				subject_id : data.subject_id,
 				faculty_member_id : data.faculty_member_id
 			})
 			.save(null, saveOptions);
 	};
 	
+    AllocationRepository.prototype.delete = function(query, deleteOptions){
+        deleteOptions = deleteOptions || {};
+        return dbContext.Allocation
+            .forge(query)
+            .destroy();
+    }
 	module.exports.AllocationRepository = AllocationRepository;
 })();
 
@@ -231,6 +273,14 @@ var Errors = require('../utils/custom-errors');
 	var that;
 	var SubjectRepository = function () { 
 		that = this;
+	};
+    
+    SubjectRepository.prototype.getAll = function(query, options){
+		options = options || {};
+        
+		return dbContext.Subject
+			.forge(query)
+			.fetchAll(options);
 	};
 	
 	SubjectRepository.prototype.getAllByGradeId = function(grade_id){

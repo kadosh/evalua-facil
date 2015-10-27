@@ -4,6 +4,13 @@ var Checkit = require('checkit');
 (function() {
 	
 	module.exports.Bookshelf = bookshelf;
+    
+    module.exports.Evaluation = bookshelf.Model.extend({
+		tableName : 'evaluations',
+		allocation : function(){
+			return this.belongsTo(module.exports.Allocation);
+		}
+	});
 	
 	module.exports.Allocation = bookshelf.Model.extend({
 		tableName : 'allocations',
