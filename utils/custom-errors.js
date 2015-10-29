@@ -76,4 +76,15 @@
 	InvalidOperationError.prototype.constructor = InvalidOperationError;
 	
 	module.exports.InvalidOperationError = InvalidOperationError;
+    
+    function ForbiddenGroupAccessError(message) {
+	  this.name = 'ForbiddenGroupAccessError';
+	  this.message = message || "Faculty doesn't have access to the requested Group.";
+	  this.stack = (new Error()).stack;
+	}
+
+	ForbiddenGroupAccessError.prototype = Object.create(Error.prototype);
+	ForbiddenGroupAccessError.prototype.constructor = ForbiddenGroupAccessError;
+	
+	module.exports.ForbiddenGroupAccessError = ForbiddenGroupAccessError;
 })();

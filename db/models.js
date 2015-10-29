@@ -5,6 +5,13 @@ var Checkit = require('checkit');
 	
 	module.exports.Bookshelf = bookshelf;
     
+    module.exports.Student = bookshelf.Model.extend({
+		tableName : 'students',
+        group : function(){
+            return this.belongsTo(module.exports.SchoolGroup);
+        }
+	});
+    
     module.exports.Evaluation = bookshelf.Model.extend({
 		tableName : 'evaluations',
 		allocation : function(){

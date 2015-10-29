@@ -26,6 +26,36 @@ var Errors = require('../utils/custom-errors');
 (function(){
     
 	/**
+	 * Student Repository
+	 *
+	 */	 
+	var that;
+	var StudentRepository = function () { 
+		that = this;
+	};
+	
+	StudentRepository.prototype.getOne = function(query, options){
+        options = options || {};
+        
+		return dbContext.Student
+			.forge(query)
+			.fetch(options);
+	};
+    
+	StudentRepository.prototype.getAll = function(query, options){
+        options = options || {};
+        
+		return dbContext.Student
+			.forge(query)
+			.fetchAll(options);
+	};
+    
+    module.exports.EvaluationRepository = EvaluationRepository;
+})();
+
+(function(){
+    
+	/**
 	 * Grade Repository
 	 *
 	 */	 
