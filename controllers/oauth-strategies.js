@@ -128,7 +128,7 @@ exports.checkRole = function (roles) {
             }
         }
 
-        if (roles instanceof Array || typeof roles == 'array') {            
+        if (roles instanceof Array || typeof roles == 'array') {
             if (roles.indexOf(userRole) >= 0) {
                 success = true;
                 next();
