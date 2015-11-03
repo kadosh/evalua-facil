@@ -13,7 +13,7 @@ var repos = require('../db/repositories');
     };
 
     StudentsHandler.prototype.put = function (req, res) {
-
+        
     };
 
     StudentsHandler.prototype.getByGroup = function (req, res) {
