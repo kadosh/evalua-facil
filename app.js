@@ -50,6 +50,12 @@ router.route('/api/faculty-members/:faculty_member_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.getOne)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.update);
 
+router.route('/api/faculty-members/:faculty_member_id/deactivate')
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.deactivate);
+
+router.route('/api/faculty-members/:faculty_member_id/activate')
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.activate);
+
 router.route('/api/account/me')
     .get(oauthStrategies.isBearerAuthenticated, accountController.getMe);
 

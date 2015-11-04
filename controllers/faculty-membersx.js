@@ -149,12 +149,68 @@ var bcrypt = require('bcryptjs');
             });
     };
 
+    FacultyMembersHandler.prototype.deactivate = function (req, res) {
+        return that.facultyMemberRepository
+            .getOne({
+                id: req.params.faculty_member_id
+            })
+            .then(function (facultyMember) {
+
+                if (!facultyMember) {
+                    throw new Errors.NotFoundEntity("The requested faculty member id was not found");
+                }
+
+                return that.userRepository
+                    .lockUser(facultyMember.get('user_id'))
+                    .then(function (result) {
+                        res.json({message: 'The user has been blocked and will not be able to access the system.'})
+                    });
+            })
+            .catch(function (error) {
+                res.status(500).json({
+                    error: true,
+                    data: {
+                        message: error.message
+                    }
+                });
+            });
+    };
+
+    FacultyMembersHandler.prototype.activate = function (req, res) {
+        return that.facultyMemberRepository
+            .getOne({
+                id: req.params.faculty_member_id
+            })
+            .then(function (facultyMember) {
+
+                if (!facultyMember) {
+                    throw new Errors.NotFoundEntity("The requested faculty member id was not found");
+                }
+
+                return that.userRepository
+                    .unlockUser(facultyMember.get('user_id'))
+                    .then(function (result) {
+                        res.json({message: 'The user is now able to access the system.'})
+                    });
+            })
+            .catch(function (error) {
+                res.status(500).json({
+                    error: true,
+                    data: {
+                        message: error.message
+                    }
+                });
+            });
+    };
+
     var handler = new FacultyMembersHandler();
 
     module.exports.getOne = handler.getOne;
     module.exports.getAll = handler.getAll;
     module.exports.put = handler.put;
     module.exports.update = handler.update;
+    module.exports.activate = handler.activate;
+    module.exports.deactivate = handler.deactivate;
 
 })();
 

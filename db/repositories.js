@@ -576,6 +576,28 @@ var Errors = require('../utils/custom-errors');
             .forge({username: username})
             .fetch({withRelated: ['role']});
     };
+    
+    UserRepository.prototype.lockUser = function (user_id) {
+        saveOptions = saveOptions || {};
+        return dbContext.User
+            .forge({
+                id: user_id
+            })
+            .save({
+                is_blocked : 1
+            });
+    };
+    
+    UserRepository.prototype.unlockUser = function (user_id) {
+        saveOptions = saveOptions || {};
+        return dbContext.User
+            .forge({
+                id: user_id
+            })
+            .save({
+                is_blocked : 0
+            });
+    };
 
     UserRepository.prototype.insert = function (data, saveOptions) {
         saveOptions = saveOptions || {};
