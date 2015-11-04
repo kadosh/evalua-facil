@@ -584,7 +584,7 @@ var Errors = require('../utils/custom-errors');
                 id: user_id
             })
             .save({
-                is_blocked : 1
+                is_locked : 1
             });
     };
     
@@ -595,7 +595,7 @@ var Errors = require('../utils/custom-errors');
                 id: user_id
             })
             .save({
-                is_blocked : 0
+                is_locked : 0
             });
     };
 
