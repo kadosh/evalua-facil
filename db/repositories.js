@@ -58,6 +58,13 @@ var Errors = require('../utils/custom-errors');
                 gender: data.gender
             }, saveOptions);
     };
+    
+    StudentRepository.prototype.delete = function (query, deleteOptions) {
+        deleteOptions = deleteOptions || {};
+        return dbContext.Student
+            .forge(query)
+            .destroy(deleteOptions);
+    };
 
     module.exports.StudentRepository = StudentRepository;
 })();
@@ -352,7 +359,8 @@ var Errors = require('../utils/custom-errors');
         return dbContext.Allocation
             .forge(query)
             .destroy();
-    }
+    };
+
     module.exports.AllocationRepository = AllocationRepository;
 })();
 
@@ -576,7 +584,7 @@ var Errors = require('../utils/custom-errors');
             .forge({username: username})
             .fetch({withRelated: ['role']});
     };
-    
+
     UserRepository.prototype.lockUser = function (user_id) {
         saveOptions = saveOptions || {};
         return dbContext.User
@@ -584,10 +592,10 @@ var Errors = require('../utils/custom-errors');
                 id: user_id
             })
             .save({
-                is_locked : 1
+                is_locked: 1
             });
     };
-    
+
     UserRepository.prototype.unlockUser = function (user_id) {
         saveOptions = saveOptions || {};
         return dbContext.User
@@ -595,7 +603,7 @@ var Errors = require('../utils/custom-errors');
                 id: user_id
             })
             .save({
-                is_locked : 0
+                is_locked: 0
             });
     };
 

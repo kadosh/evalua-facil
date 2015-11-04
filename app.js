@@ -102,7 +102,8 @@ router.route('/api/students/in-group/:school_group_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.getByGroup);
 
 router.route('/api/students/:student_id')
-    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update);
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update)
+    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete)
 
 // Api endpoints for Bimesters
 router.route('/api/bimesters')

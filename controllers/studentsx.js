@@ -70,6 +70,40 @@ var repos = require('../db/repositories');
             });
     };
 
+    StudentsHandler.prototype._execDelete = function (req, res) {
+        var student_id = parseInt(req.params.student_id);
+
+        return that.studentRepository
+            .findById(student_id)
+            .then(function (student) {
+
+                if (!student) {
+                    throw new Errors.NotFoundEntity("The provided student id was not found");
+                }
+
+                return that.studentRepository
+                    .delete(student_id)
+                    .then(function (student) {
+                        res.json({message: "The student was successfully deleted."});
+                    });
+            });
+    };
+
+    StudentsHandler.prototype._execGetOne = function (req, res) {
+        var student_id = parseInt(req.params.student_id);
+
+        return that.studentRepository
+            .findById(student_id)
+            .then(function (student) {
+
+                if (!student) {
+                    throw new Errors.NotFoundEntity("The provided student id was not found");
+                }
+
+                res.json(student.omit(['school_group_id']));
+            });
+    };
+
     StudentsHandler.prototype._execGetByGroup = function (req, res) {
         var group_id = parseInt(req.params.group_id);
 
@@ -83,6 +117,8 @@ var repos = require('../db/repositories');
     };
 
     StudentsHandler.prototype.put = function (req, res) {
+        var principalUser = req.user;
+
         if (principalUser.related('role').get('title') == 'director') {
             // No alloc validation
             return that._execPut(req, res)
@@ -120,6 +156,9 @@ var repos = require('../db/repositories');
     };
 
     StudentsHandler.prototype.update = function (req, res) {
+        var principalUser = req.user,
+            student_id = req.params.student_id;
+
         if (principalUser.related('role').get('title') == 'director') {
             // No alloc validation
             return that._execUpdate(req, res)
@@ -133,17 +172,110 @@ var repos = require('../db/repositories');
                 });
         }
         else {
-            return that.allocationRepository
-                .getOne({
-                    faculty_member_id: principalUser.related('facultyMember').get('id'),
-                    school_group_id: school_group_id
-                })
-                .then(function (alloc) {
-                    if (!alloc) {
-                        throw new Errors.ForbiddenGroupAccessError();
-                    }
 
-                    return that._execUpdate(req, res);
+            return that.studentRepository
+                .findById(student_id)
+                .then(function (student) {
+                    return that.allocationRepository
+                        .getOne({
+                            faculty_member_id: principalUser.related('facultyMember').get('id'),
+                            school_group_id: student.get('school_group_id')
+                        })
+                        .then(function (alloc) {
+                            if (!alloc) {
+                                throw new Errors.ForbiddenGroupAccessError();
+                            }
+
+                            return that._execUpdate(req, res);
+                        });
+                })
+                .catch(function (error) {
+                    res.status(500).json({
+                        error: true,
+                        data: {
+                            message: error.message
+                        }
+                    });
+                });
+        }
+    };
+
+    StudentsHandler.prototype.getOne = function (req, res) {
+        var principalUser = req.user,
+            student_id = req.params.student_id;
+
+        if (principalUser.related('role').get('title') == 'director') {
+            // No alloc validation
+            return that._execGetOne(req, res)
+                .catch(function (error) {
+                    res.status(500).json({
+                        error: true,
+                        data: {
+                            message: error.message
+                        }
+                    });
+                });
+        }
+        else {
+            return that.studentRepository
+                .findById(student_id)
+                .then(function (student) {
+                    return that.allocationRepository
+                        .getOne({
+                            faculty_member_id: principalUser.related('facultyMember').get('id'),
+                            school_group_id: student.get('school_group_id')
+                        })
+                        .then(function (alloc) {
+                            if (!alloc) {
+                                throw new Errors.ForbiddenGroupAccessError();
+                            }
+
+                            return that._execGetOne(req, res);
+                        });
+                })
+                .catch(function (error) {
+                    res.status(500).json({
+                        error: true,
+                        data: {
+                            message: error.message
+                        }
+                    });
+                });
+        }
+    };
+
+    StudentsHandler.prototype.delete = function (req, res) {
+        var principalUser = req.user,
+            student_id = req.params.student_id;
+
+        if (principalUser.related('role').get('title') == 'director') {
+            // No alloc validation
+            return that._execDelete(req, res)
+                .catch(function (error) {
+                    res.status(500).json({
+                        error: true,
+                        data: {
+                            message: error.message
+                        }
+                    });
+                });
+        }
+        else {
+            return that.studentRepository
+                .findById(student_id)
+                .then(function (student) {
+                    return that.allocationRepository
+                        .getOne({
+                            faculty_member_id: principalUser.related('facultyMember').get('id'),
+                            school_group_id: student.get('school_group_id')
+                        })
+                        .then(function (alloc) {
+                            if (!alloc) {
+                                throw new Errors.ForbiddenGroupAccessError();
+                            }
+
+                            return that._execDelete(req, res);
+                        });
                 })
                 .catch(function (error) {
                     res.status(500).json({
