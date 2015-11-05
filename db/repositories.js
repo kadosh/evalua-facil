@@ -58,11 +58,11 @@ var Errors = require('../utils/custom-errors');
                 gender: data.gender
             }, saveOptions);
     };
-    
-    StudentRepository.prototype.delete = function (query, deleteOptions) {
+
+    StudentRepository.prototype.delete = function (student_id, deleteOptions) {
         deleteOptions = deleteOptions || {};
         return dbContext.Student
-            .forge(query)
+            .forge({id: student_id})
             .destroy(deleteOptions);
     };
 
@@ -86,36 +86,6 @@ var Errors = require('../utils/custom-errors');
         return dbContext.Evaluation
             .forge(query)
             .fetch(options);
-    };
-
-    module.exports.EvaluationRepository = EvaluationRepository;
-})();
-
-(function () {
-
-    /**
-     * Student Repository
-     *
-     */
-    var that;
-    var StudentRepository = function () {
-        that = this;
-    };
-
-    StudentRepository.prototype.getOne = function (query, options) {
-        options = options || {};
-
-        return dbContext.Student
-            .forge(query)
-            .fetch(options);
-    };
-
-    StudentRepository.prototype.getAll = function (query, options) {
-        options = options || {};
-
-        return dbContext.Student
-            .forge(query)
-            .fetchAll(options);
     };
 
     module.exports.EvaluationRepository = EvaluationRepository;

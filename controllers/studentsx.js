@@ -2,6 +2,7 @@
 var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
+var httpUtils = require('../utils/http-utils');
 
 (function () {
     var that;
@@ -37,7 +38,7 @@ var repos = require('../db/repositories');
                         gender: gender
                     })
                     .then(function (student) {
-                        res.json(student);
+                        httpUtils.success(req, res, student);
                     });
             });
     };
@@ -51,9 +52,9 @@ var repos = require('../db/repositories');
 
         return that.studentRepository
             .findById(student_id)
-            .then(function (student) {
+            .then(function (existingStudent) {
 
-                if (!student) {
+                if (!existingStudent) {
                     throw new Errors.NotFoundEntity("The provided student id was not found");
                 }
 
@@ -62,10 +63,11 @@ var repos = require('../db/repositories');
                         first_name: first_name,
                         last_name: last_name,
                         mothers_name: mothers_name,
-                        gender: gender
+                        gender: gender,
+                        student_id: student_id
                     })
                     .then(function (student) {
-                        res.json(student);
+                        httpUtils.success(req, res, student);
                     });
             });
     };
@@ -78,13 +80,14 @@ var repos = require('../db/repositories');
             .then(function (student) {
 
                 if (!student) {
+                    res.status(404);
                     throw new Errors.NotFoundEntity("The provided student id was not found");
                 }
 
                 return that.studentRepository
                     .delete(student_id)
                     .then(function (student) {
-                        res.json({message: "The student was successfully deleted."});
+                        httpUtils.success(req, res, {message: "The student was successfully deleted."});
                     });
             });
     };
@@ -97,23 +100,34 @@ var repos = require('../db/repositories');
             .then(function (student) {
 
                 if (!student) {
+                    res.status(404);
                     throw new Errors.NotFoundEntity("The provided student id was not found");
                 }
 
-                res.json(student.omit(['school_group_id']));
+                httpUtils.success(req, res, student.omit(['school_group_id']));
             });
     };
 
     StudentsHandler.prototype._execGetByGroup = function (req, res) {
-        var group_id = parseInt(req.params.group_id);
+        var group_id = parseInt(req.params.school_group_id);
 
-        return that.studentRepository
-            .getAll({
-                school_group_id: group_id
+        return that.groupRepository
+            .findById(group_id)
+            .then(function (group) {
+
+                if (!group) {
+                    res.status(404);
+                    throw new Errors.NotFoundEntity("The provided group was not found");
+                }
+
+                return that.studentRepository
+                    .getAll({
+                        school_group_id: group_id
+                    })
+                    .then(function (items) {
+                        httpUtils.success(req, res, items);
+                    });
             })
-            .then(function (items) {
-                res.send(items.toJSON())
-            });
     };
 
     StudentsHandler.prototype.put = function (req, res) {
@@ -123,12 +137,7 @@ var repos = require('../db/repositories');
             // No alloc validation
             return that._execPut(req, res)
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
         else {
@@ -145,12 +154,7 @@ var repos = require('../db/repositories');
                     return that._execPut(req, res);
                 })
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
     };
@@ -163,12 +167,7 @@ var repos = require('../db/repositories');
             // No alloc validation
             return that._execUpdate(req, res)
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
         else {
@@ -183,6 +182,7 @@ var repos = require('../db/repositories');
                         })
                         .then(function (alloc) {
                             if (!alloc) {
+                                res.status(403);
                                 throw new Errors.ForbiddenGroupAccessError();
                             }
 
@@ -190,12 +190,7 @@ var repos = require('../db/repositories');
                         });
                 })
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
     };
@@ -208,12 +203,7 @@ var repos = require('../db/repositories');
             // No alloc validation
             return that._execGetOne(req, res)
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
         else {
@@ -234,12 +224,7 @@ var repos = require('../db/repositories');
                         });
                 })
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
     };
@@ -252,12 +237,7 @@ var repos = require('../db/repositories');
             // No alloc validation
             return that._execDelete(req, res)
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
         else {
@@ -278,12 +258,7 @@ var repos = require('../db/repositories');
                         });
                 })
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
     };
@@ -295,12 +270,7 @@ var repos = require('../db/repositories');
         if (principalUser.related('role').get('title') == 'director') {
             return that._execGetByGroup(req, res)
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         } else {
             return that.allocationRepository
@@ -316,12 +286,7 @@ var repos = require('../db/repositories');
                     return that._execGetByGroup(req, res);
                 })
                 .catch(function (error) {
-                    res.status(500).json({
-                        error: true,
-                        data: {
-                            message: error.message
-                        }
-                    });
+                    httpUtils.handleGeneralError(req, res, error);
                 });
         }
     };
@@ -331,4 +296,5 @@ var repos = require('../db/repositories');
     module.exports.put = handler.put;
     module.exports.update = handler.update;
     module.exports.getByGroup = handler.getByGroup;
+    module.exports.delete = handler.delete;
 })();
