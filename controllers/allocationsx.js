@@ -214,6 +214,7 @@ var repos = require('../db/repositories');
     AllocsHandler.prototype.getForFacultyMember = function (req, res) {
         var faculty_member_id = req.params.faculty_member_id;
 
+        console.log(faculty_member_id);
         return that.facultyMemberRepository
             .getOne({
                 id: faculty_member_id

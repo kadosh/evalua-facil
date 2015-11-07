@@ -2,6 +2,37 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 
 (function () {
+
+    /**
+     * Bimester Repository
+     *
+     */
+    var that;
+    var BimesterRepository = function () {
+        that = this;
+    };
+
+    BimesterRepository.prototype.getOne = function (query, options) {
+        options = options || {};
+
+        return dbContext.Bimester
+            .forge(query)
+            .fetch(options);
+    };
+
+    BimesterRepository.prototype.getCurrent = function (date) {
+        return dbContext.Bimester
+            .query(function (qb) {
+                //qb.where(date, '>=', 'start_timestamp').andWhere(date, '<=', 'end_timestamp');
+                qb.where('start_timestamp', '<=', date).andWhere('end_timestamp', '>=', date);
+            })
+            .fetch();
+    };
+
+    module.exports.BimesterRepository = BimesterRepository;
+})();
+
+(function () {
     /**
      * Student Repository
      *
@@ -15,15 +46,23 @@ var Errors = require('../utils/custom-errors');
         options = options || {};
 
         return dbContext.Student
-            .forge(query)
+            .query(query)
+            .fetchAll(options);
+    };
+
+    StudentRepository.prototype.queryAll = function (query, options) {
+        options = options || {};
+
+        return dbContext.Student
+            .query(query)
             .fetchAll(options);
     };
 
     StudentRepository.prototype.getAllByGroupId = function (school_group_id) {
 
         return dbContext.Student
-            .forge({school_group_id: school_group_id})
-            .fetchAll();
+            .query({where: {school_group_id: school_group_id}})
+            .fetchAll({withRelated: ['group']});
     };
 
     StudentRepository.prototype.findById = function (student_id) {
@@ -72,6 +111,54 @@ var Errors = require('../utils/custom-errors');
 (function () {
 
     /**
+     * Student Evaluation Repository
+     *
+     */
+    var that;
+    var StudentEvaluationRepository = function () {
+        that = this;
+    };
+
+    StudentEvaluationRepository.prototype.getOne = function (query, options) {
+        options = options || {};
+
+        return dbContext.StudentEvaluation
+            .forge(query)
+            .fetch(options);
+    };
+
+    StudentEvaluationRepository.prototype.getFinishedByStudent = function (student_id, bimester_number, options) {
+        options = options || {};
+
+        return dbContext.StudentEvaluation
+            .query({where: {student_id: student_id}, andWhere: {bimester_number: bimester_number}})
+            .fetchAll(options);
+    };
+
+    StudentEvaluationRepository.prototype.getMissingByGroupAndSubject = function (query, options) {
+        options = options || {};
+
+        return dbContext.Evaluation
+            .query(function (q) {
+                q.whereNotIn()
+                q.distinct()
+                    .innerJoin('grades', function () {
+                        this.on('school_groups.grade_id', '=', 'grades.id')
+                            .andOn('grades.grade_number', '=', grade_number)
+                    })
+                    .where('school_groups.group_name', name);
+
+                return q;
+            })
+            .fetch(options);
+    };
+
+    module.exports.StudentEvaluationRepository = StudentEvaluationRepository;
+})();
+
+(function () {
+
+    /**
      * Evaluation Repository
      *
      */
@@ -85,6 +172,41 @@ var Errors = require('../utils/custom-errors');
 
         return dbContext.Evaluation
             .forge(query)
+            .fetch(options);
+    };
+
+    EvaluationRepository.prototype.getMissingByGroupAndSubjects = function (query, options) {
+        options = options || {};
+
+        return dbContext.Evaluation
+            .query(function (q) {
+                q.distinct()
+                    .innerJoin('grades', function () {
+                        this.on('school_groups.grade_id', '=', 'grades.id')
+                            .andOn('grades.grade_number', '=', grade_number)
+                    })
+                    .where('school_groups.group_name', name);
+
+                return q;
+            })
+            .fetch(options);
+    };
+
+    EvaluationRepository.prototype.getMissingByGroupAndSubject = function (query, options) {
+        options = options || {};
+
+        return dbContext.Evaluation
+            .query(function (q) {
+                q.whereNotIn()
+                q.distinct()
+                    .innerJoin('grades', function () {
+                        this.on('school_groups.grade_id', '=', 'grades.id')
+                            .andOn('grades.grade_number', '=', grade_number)
+                    })
+                    .where('school_groups.group_name', name);
+
+                return q;
+            })
             .fetch(options);
     };
 
@@ -157,6 +279,14 @@ var Errors = require('../utils/custom-errors');
         return dbContext.SchoolGroup
             .forge({id: group_id})
             .fetch();
+    };
+
+    GroupRepository.prototype.getOne = function (query, options) {
+        options = options || {};
+
+        return dbContext.SchoolGroup
+            .forge(query)
+            .fetch(options);
     };
 
     GroupRepository.prototype.getAll = function (query, options) {
@@ -309,7 +439,14 @@ var Errors = require('../utils/custom-errors');
     AllocationRepository.prototype.getAll = function (query, options) {
         options = options || {};
         return dbContext.Allocation
-            .forge(query)
+            .query(query)
+            .fetchAll(options);
+    };
+
+    AllocationRepository.prototype.forFaculty = function (query, options) {
+        options = options || {};
+        return dbContext.Allocation
+            .query(query)
             .fetchAll(options);
     };
 
@@ -348,7 +485,7 @@ var Errors = require('../utils/custom-errors');
         options = options || {};
 
         return dbContext.Subject
-            .forge(query)
+            .query(query)
             .fetchAll(options);
     };
 
@@ -407,25 +544,6 @@ var Errors = require('../utils/custom-errors');
     };
 
     module.exports.SubjectRepository = SubjectRepository;
-})();
-
-(function () {
-    /**
-     * Bimester Repository
-     *
-     */
-    var that;
-    var BimesterRepository = function () {
-        that = this;
-    };
-
-    BimesterRepository.prototype.findByNumber = function (bimester_number) {
-        return dbContext.Bimester
-            .forge({bimester_number: bimester_number})
-            .fetch();
-    };
-
-    module.exports.BimesterRepository = BimesterRepository;
 })();
 
 (function () {

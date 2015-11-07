@@ -11,6 +11,7 @@ var allocationsController = require('./controllers/allocationsx');
 var bimestersController = require('./controllers/bimesters');
 var revisionsController = require('./controllers/revisionsx');
 var testController = require('./controllers/test');
+var evaluationsController = require('./controllers/evaluationsx');
 
 var schoolGroupsController = require('./controllers/school-groupsx');
 var subjectsController = require('./controllers/subjectsx');
@@ -104,6 +105,9 @@ router.route('/api/students/in-group/:school_group_id')
 router.route('/api/students/:student_id')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update)
     .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete)
+
+router.route('/api/evaluations/pending/:school_group_id')
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), evaluationsController.getPendingByGroup);
 
 // Api endpoints for Bimesters
 router.route('/api/bimesters')

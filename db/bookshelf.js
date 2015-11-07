@@ -1,7 +1,7 @@
 // In a file named something like bookshelf.js
 var dbConfig = {
     client: 'mysql',
-    debug: false,
+    debug: true,
     connection: {
         host: 'localhost',
         user: 'root',

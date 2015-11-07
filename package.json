@@ -4,6 +4,7 @@
   "dependencies": {
     "async": "^1.4.2",
     "bcryptjs": "^2.2.1",
+    "bluebird": "^3.0.5",
     "body-parser": "^1.13.3",
     "bookshelf": "^0.8.2",
     "checkit": "^0.5.1",
@@ -14,6 +15,7 @@
     "errorhandler": "^1.4.2",
     "express": "^4.13.3",
     "express-session": "^1.11.3",
+    "http-status-codes": "^1.0.5",
     "jade": "^1.11.0",
     "knex": "^0.8.6",
     "morgan": "^1.6.1",
@@ -27,19 +29,19 @@
     "passport-oauth2-client-password": "^0.1.2"
   },
   "main": "./app.js",
-    "author": {
-        "name": "Alex Ocampo",
-        "email": "kadosh.ivan@gmail.com"
-    },
-    "keywords": [],
-    "licenses": {
-        "type": "mit"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/YOUR_LOGIN/Hello World.git"
-    },
-    "bugs": {
-        "url": "http://github.com/YOUR_LOGIN/Hello World/issues"
-    }
+  "author": {
+    "name": "Alex Ocampo",
+    "email": "kadosh.ivan@gmail.com"
+  },
+  "keywords": [],
+  "licenses": {
+    "type": "mit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/YOUR_LOGIN/Hello World.git"
+  },
+  "bugs": {
+    "url": "http://github.com/YOUR_LOGIN/Hello World/issues"
+  }
 }

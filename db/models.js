@@ -9,6 +9,9 @@ var Checkit = require('checkit');
         tableName: 'students',
         group: function () {
             return this.belongsTo(module.exports.SchoolGroup);
+        },
+        evaluations: function () {
+            return this.hasMany(module.exports.StudentEvaluation);
         }
     });
 
@@ -16,6 +19,16 @@ var Checkit = require('checkit');
         tableName: 'evaluations',
         allocation: function () {
             return this.belongsTo(module.exports.Allocation);
+        }
+    });
+
+    module.exports.StudentEvaluation = bookshelf.Model.extend({
+        tableName: 'student_evaluations',
+        subject: function () {
+            return this.belongsTo(module.exports.Subject);
+        },
+        student: function () {
+            return this.belongsTo(module.exports.Student);
         }
     });
 
@@ -113,6 +126,9 @@ var Checkit = require('checkit');
         tableName: 'school_groups',
         allocations: function () {
             return this.hasMany(module.exports.Allocation);
+        },
+        students: function () {
+            return this.hasMany(module.exports.Student);
         },
         grade: function () {
             return this.belongsTo(module.exports.Grade);
