@@ -29,6 +29,16 @@ var Checkit = require('checkit');
         },
         student: function () {
             return this.belongsTo(module.exports.Student);
+        },
+        details: function () {
+            return this.hasMany(module.exports.StudentEvaluationDetail);
+        }
+    });
+
+    module.exports.StudentEvaluationDetail = bookshelf.Model.extend({
+        tableName: 'student_evaluation_details',
+        indicator: function(){
+            return this.belongsTo(module.exports.Indicator);
         }
     });
 
@@ -68,9 +78,6 @@ var Checkit = require('checkit');
         role: function () {
             return this.belongsTo(module.exports.Role);
         }
-        // messages : function() {
-        // return this.hasMany(Posts);
-        // }
     });
 
     module.exports.Role = bookshelf.Model.extend({
@@ -164,13 +171,6 @@ var Checkit = require('checkit');
 
     module.exports.Indicator = bookshelf.Model.extend({
         tableName: 'indicators'
-    });
-
-    module.exports.IndicatorCategory = bookshelf.Model.extend({
-        tableName: 'indicator_categories',
-        indicators: function () {
-            return this.hasMany(module.exports.Indicator);
-        }
     });
 
     module.exports.AltRevision = bookshelf.Model.extend({

@@ -44,7 +44,7 @@ router.route('/oauth/token')
     .post(oauthStrategies.isClientAuthenticated, oauthServer.token);
 
 router.route('/api/faculty-members')
-    .get(oauthStrategies.isBearerAuthenticated,  oauthStrategies.checkRole(["director"]), facultyMembersController.getAll)
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.getAll)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.put);
 
 router.route('/api/faculty-members/:faculty_member_id')
@@ -106,8 +106,18 @@ router.route('/api/students/:student_id')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update)
     .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete)
 
-router.route('/api/evaluations/pending/:school_group_id')
+router.route('/api/evaluations/current/group/pending/:school_group_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), evaluationsController.getPendingByGroup);
+
+router.route('/api/evaluations/bimester/:bimester_number/group/all/:school_group_id')
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), evaluationsController.getStudentsListByGroup);
+
+router.route('/api/evaluations/bimester/:bimester_number/group/all/:school_group_id/subject/:subject_id')
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), evaluationsController.getStudentsListByGroupFilterSubject);
+
+
+router.route('/api/evaluations/bimester/:bimester_number/student/:student_id')
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher"]), evaluationsController.put);
 
 // Api endpoints for Bimesters
 router.route('/api/bimesters')

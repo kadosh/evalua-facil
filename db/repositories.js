@@ -131,26 +131,58 @@ var Errors = require('../utils/custom-errors');
         options = options || {};
 
         return dbContext.StudentEvaluation
-            .query({where: {student_id: student_id}, andWhere: {bimester_number: bimester_number}})
-            .fetchAll(options);
-    };
-
-    StudentEvaluationRepository.prototype.getMissingByGroupAndSubject = function (query, options) {
-        options = options || {};
-
-        return dbContext.Evaluation
             .query(function (q) {
-                q.whereNotIn()
                 q.distinct()
-                    .innerJoin('grades', function () {
-                        this.on('school_groups.grade_id', '=', 'grades.id')
-                            .andOn('grades.grade_number', '=', grade_number)
-                    })
-                    .where('school_groups.group_name', name);
+                    .where('student_id', '=', student_id)
+                    .andWhere('bimester_number', '=', bimester_number)
+                    .andWhere('is_finished', '=', 1);
 
                 return q;
             })
-            .fetch(options);
+            .fetchAll(options);
+    };
+
+    StudentEvaluationRepository.prototype.getAllByStudent = function (student_id, bimester_number, options) {
+        options = options || {};
+
+        return dbContext.StudentEvaluation
+            .query(function (q) {
+                q.distinct()
+                    .where('student_id', '=', student_id)
+                    .andWhere('bimester_number', '=', bimester_number);
+
+                return q;
+            })
+            .fetchAll(options);
+    };
+
+    StudentEvaluationRepository.prototype.insert = function (data) {
+        return dbContext.StudentEvaluation
+            .forge()
+            .save({
+                bimester_number: data.bimester_number,
+                subject_id: data.subject_id,
+                created_timestamp: data.created_timestamp,
+                last_change_timestamp: data.last_change_timestamp,
+                is_in_conflict: data.is_in_conflict,
+                student_id: data.student_id,
+                is_finished: data.is_finished,
+                finished_timestamp: data.finished_timestamp
+            });
+    };
+
+    StudentEvaluationRepository.prototype.update = function (data, saveOptions) {
+        saveOptions = saveOptions || {};
+        return dbContext.StudentEvaluation
+            .forge({
+                id: data.id
+            })
+            .save({
+                last_change_timestamp: data.last_change_timestamp,
+                is_in_conflict: data.is_in_conflict,
+                is_finished: data.is_finished,
+                finished_timestamp: data.finished_timestamp
+            }, saveOptions);
     };
 
     module.exports.StudentEvaluationRepository = StudentEvaluationRepository;
@@ -738,4 +770,47 @@ var Errors = require('../utils/custom-errors');
     }
 
     module.exports.RoleRepository = RoleRepository;
+})();
+
+(function () {
+
+    /**
+     * Student Evaluation Detail Repository
+     *
+     */
+    var that;
+    var StudentEvaluationDetailRepository = function () {
+        that = this;
+    };
+
+    StudentEvaluationDetailRepository.prototype.getOne = function (query, options) {
+        options = options || {};
+
+        return dbContext.StudentEvaluationDetail
+            .forge(query)
+            .fetch(options);
+    };
+
+    StudentEvaluationDetailRepository.prototype.insert = function (data) {
+        return dbContext.StudentEvaluationDetail
+            .forge()
+            .save({
+                student_evaluation_id: data.student_evaluation_id,
+                indicator_id: data.indicator_id,
+                input_value: data.input_value
+            });
+    };
+
+    StudentEvaluationDetailRepository.prototype.update = function (data, saveOptions) {
+        saveOptions = saveOptions || {};
+        return dbContext.StudentEvaluationDetail
+            .forge({
+                id: data.id
+            })
+            .save({
+                input_value: data.input_value
+            }, saveOptions);
+    };
+
+    module.exports.StudentEvaluationDetailRepository = StudentEvaluationDetailRepository;
 })();
