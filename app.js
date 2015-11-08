@@ -3,6 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+var cors = require('cors');
 var facultyMembersController = require('./controllers/faculty-membersx');
 var accountController = require('./controllers/accountx');
 var gradesController = require('./controllers/gradesx');
@@ -26,6 +27,8 @@ app.set('view engine', 'jade');
 
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cors());
 
 // Use express session support since OAuth2orize requires it
 app.use(session({
