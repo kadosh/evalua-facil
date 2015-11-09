@@ -181,7 +181,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'master','$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',1,0),(2,'test','$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',2,0);
+INSERT INTO `users` VALUES (1,'master','$2a$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',1,0),(2,'test','$2a$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',2,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

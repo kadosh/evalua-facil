@@ -265,7 +265,7 @@ var httpUtils = require('../utils/http-utils');
 
     StudentsHandler.prototype.getByGroup = function (req, res) {
         var principalUser = req.user,
-            group_id = parseInt(req.params.group_id);
+            group_id = parseInt(req.params.school_group_id);
 
         if (principalUser.related('role').get('title') == 'director') {
             return that._execGetByGroup(req, res)
