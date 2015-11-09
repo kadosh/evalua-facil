@@ -122,7 +122,7 @@ var httpUtils = require('../utils/http-utils');
 
                 return that.studentRepository
                     .getAll({
-                        school_group_id: group_id
+                        where: {school_group_id: group_id}
                     })
                     .then(function (items) {
                         httpUtils.success(req, res, items);
