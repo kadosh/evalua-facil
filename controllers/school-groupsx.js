@@ -37,6 +37,22 @@ var repos = require('../db/repositories');
             });
     };
 
+    GroupsHandler.prototype.getAll = function (req, res) {
+        return that.groupRepository
+            .getAll
+            .then(function (items) {
+                res.send(items.toJSON());
+            })
+            .catch(function (error) {
+                res.status(500).json({
+                    error: true,
+                    data: {
+                        message: error.message
+                    }
+                });
+            });
+    };
+
     GroupsHandler.prototype.put = function (req, res) {
         var grade_number = parseInt(req.body.grade_number),
             group_name = req.body.group_name;
@@ -123,4 +139,5 @@ var repos = require('../db/repositories');
     module.exports.getAllByGradeNumber = handler.getAllByGradeNumber;
     module.exports.put = handler.put;
     module.exports.update = handler.update;
+    module.exports.getAll = handler.getAll;
 })();
