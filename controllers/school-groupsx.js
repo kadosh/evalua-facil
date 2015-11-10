@@ -39,7 +39,7 @@ var repos = require('../db/repositories');
 
     GroupsHandler.prototype.getAll = function (req, res) {
         return that.groupRepository
-            .getAll
+            .getAll()
             .then(function (items) {
                 res.send(items.toJSON());
             })
