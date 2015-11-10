@@ -108,6 +108,7 @@ router.route('/api/students/in-group/:school_group_id')
 
 router.route('/api/students/:student_id')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update)
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.getOne)
     .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete)
 
 router.route('/api/evaluations/current/group/pending/:school_group_id')

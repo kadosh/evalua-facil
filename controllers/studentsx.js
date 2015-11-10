@@ -297,4 +297,5 @@ var httpUtils = require('../utils/http-utils');
     module.exports.update = handler.update;
     module.exports.getByGroup = handler.getByGroup;
     module.exports.delete = handler.delete;
+    module.exports.getOne = handler.getOne;
 })();
