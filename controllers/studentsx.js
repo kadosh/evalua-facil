@@ -3,6 +3,8 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
 var httpUtils = require('../utils/http-utils');
+var formErrors = require('../utils/form-errors');
+var Checkit = require('checkit');
 
 (function () {
     var that;
@@ -133,30 +135,49 @@ var httpUtils = require('../utils/http-utils');
     StudentsHandler.prototype.put = function (req, res) {
         var principalUser = req.user;
 
-        if (principalUser.related('role').get('title') == 'director') {
-            // No alloc validation
-            return that._execPut(req, res)
-                .catch(function (error) {
-                    httpUtils.handleGeneralError(req, res, error);
-                });
-        }
-        else {
-            return that.allocationRepository
-                .getOne({
-                    faculty_member_id: principalUser.related('facultyMember').get('id'),
-                    school_group_id: school_group_id
-                })
-                .then(function (alloc) {
-                    if (!alloc) {
-                        throw new Errors.ForbiddenGroupAccessError();
-                    }
+        var modelRules = new Checkit({
+            first_name: formErrors.REQUIRED_FIELD_RULE,
+            last_name: formErrors.REQUIRED_FIELD_RULE,
+            mothers_name: formErrors.REQUIRED_FIELD_RULE,
+            school_group_id: [
+                formErrors.REQUIRED_FIELD_RULE,
+                formErrors.INVALID_ID
+            ],
+            gender: formErrors.REQUIRED_FIELD_RULE
+        });
 
-                    return that._execPut(req, res);
-                })
-                .catch(function (error) {
-                    httpUtils.handleGeneralError(req, res, error);
-                });
-        }
+        var validationPromise = modelRules.run(req.body);
+
+        validationPromise
+            .then(function (validatedFields) {
+                if (principalUser.related('role').get('title') == 'director') {
+                    // No alloc validation
+                    return that._execPut(req, res)
+                        .catch(function (error) {
+                            httpUtils.handleGeneralError(req, res, error);
+                        });
+                }
+                else {
+                    return that.allocationRepository
+                        .getOne({
+                            faculty_member_id: principalUser.related('facultyMember').get('id'),
+                            school_group_id: school_group_id
+                        })
+                        .then(function (alloc) {
+                            if (!alloc) {
+                                throw new Errors.ForbiddenGroupAccessError();
+                            }
+
+                            return that._execPut(req, res);
+                        })
+                        .catch(function (error) {
+                            httpUtils.handleGeneralError(req, res, error);
+                        });
+                }
+            })
+            .caught(Checkit.Error, function (error) {
+                httpUtils.handleGeneralError(req, res, error, error.toJSON());
+            });
     };
 
     StudentsHandler.prototype.update = function (req, res) {

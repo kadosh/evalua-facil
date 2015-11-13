@@ -154,8 +154,8 @@ app.listen(3000);
  
  router.route('/api/grades/:grade_number')
  .get(gradesController.getGrade)
- 
- 
+
+
  
  router.route('/api/faculty-members/:faculty_member_id')
  .get(facultyMembersController.getFacultyMember);

@@ -1,7 +1,7 @@
 (function () {
     var debug = false;
 
-    module.exports.handleGeneralError = function (req, res, error) {
+    module.exports.handleGeneralError = function (req, res, error, formErrors) {
 
         if (debug) {
             console.log(error);
@@ -11,12 +11,15 @@
             res.status(500);
         }
 
-        res.json({
+        var result = {
             error: true,
             success: false,
             message: error.message,
-            debug_error: debug ? error : {}
-        });
+            debug_error: debug ? error : {},
+            form_errors: formErrors ? formErrors : []
+        };
+
+        res.json(result);
     };
 
     module.exports.success = function (req, res, data) {

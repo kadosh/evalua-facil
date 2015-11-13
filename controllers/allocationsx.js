@@ -2,6 +2,7 @@
 var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
+var httpUtils = require('../utils/http-utils');
 
 (function () {
     /**
@@ -9,6 +10,8 @@ var repos = require('../db/repositories');
      * @type AllocsHandler
      */
     var that;
+    var formErrors = [];
+    var postedAllocations = [];
 
     var AllocsHandler = function () {
         that = this;
@@ -85,7 +88,86 @@ var repos = require('../db/repositories');
             })
     };
 
+    AllocsHandler.prototype._addAllocAsync = function (req, res, grade_number, group_id, subject_id, faculty_member_id) {
+
+        return that.gradeRepository
+            .findByNumber(grade_number)
+            .then(function (grade) {
+
+                if (!grade) {
+                    throw new Errors.NotFoundEntity("The provided grade number does not exist");
+                }
+
+                return that.groupRepository
+                    .findById(group_id)
+                    .then(function (group) {
+
+                        if (!group) {
+                            throw new Errors.NotFoundEntity("The provided group id does not exist");
+                        }
+
+                        return that.subjectRepository
+                            .findById(subject_id)
+                            .then(function (subject) {
+
+                                if (!subject) {
+                                    throw new Errors.NotFoundEntity("The provided subject id does not exist");
+                                }
+
+                                return that.facultyMemberRepository
+                                    .getOne({id: faculty_member_id}, {})
+                                    .then(function (facultyMember) {
+
+                                        if (!facultyMember) {
+                                            throw new Errors.NotFoundEntity("The provided faculty member id does not exist");
+                                        }
+
+                                        return that.allocationRepository
+                                            .getOne({
+                                                school_group_id: group.get('id'),
+                                                subject_id: subject.get('id')
+                                            })
+                                            .then(function (alloc) {
+
+                                                if (alloc) {
+                                                    throw new Errors.NotFoundEntity("The provided allocation is already assigned");
+                                                }
+
+                                                return that.allocationRepository
+                                                    .insert({
+                                                        school_group_id: group_id,
+                                                        subject_id: subject_id,
+                                                        faculty_member_id: faculty_member_id
+                                                    })
+                                                    .then(function (alloc) {
+                                                        res.json(alloc);
+                                                    });
+                                            });
+                                    });
+                            });
+                    });
+            })
+            .catch(function (error) {
+                formErrors.push(error);
+            });
+    };
+
     AllocsHandler.prototype.addAllocation = function (req, res) {
+
+        var promises = [];
+
+        var allocations = req.body;
+
+        for (var i = 0; i < allocations.length; i++) {
+            promises.push(that._addAllocAsync(req, res, grade_number, group_id, subject_id, faculty_member_id));
+        }
+
+        if (formErrors.length > 0) {
+            // handle several errors
+            httpUtils.handleGeneralError(req, res, {message: "don't know"});
+        } else {
+            res.json(postedAllocations);
+        }
 
         var grade_number = parseInt(req.body.grade_number),
             group_id = parseInt(req.body.group_id),
