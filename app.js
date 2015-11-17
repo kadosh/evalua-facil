@@ -112,7 +112,7 @@ router.route('/api/students/in-group/:school_group_id')
 router.route('/api/students/:student_id')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.update)
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.getOne)
-    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete)
+    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.delete);
 
 router.route('/api/evaluations/current/group/pending/:school_group_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), evaluationsController.getPendingByGroup);
@@ -152,6 +152,7 @@ app.use(router);
 
 // Start the server
 app.listen(3000);
+console.log("Running on port: " + 3000);
 
 
 // Create endpoint handlers for /grades
