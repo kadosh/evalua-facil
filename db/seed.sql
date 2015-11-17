@@ -95,7 +95,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `grades` WRITE;
 /*!40000 ALTER TABLE `grades` DISABLE KEYS */;
-INSERT INTO `grades` VALUES (1,1,'1° Primaria'),(2,2,'2° Primaria'),(3,3,'3° Primaria'),(4,4,'4° Primaria'),(5,5,'5° Primaria'),(6,6,'6° Primaria');
+INSERT INTO `grades` VALUES (7,7,'1° Secundaria'),(8,8,'2° Secundaria'),(9,9,'3° Secundaria');
 /*!40000 ALTER TABLE `grades` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,7 +134,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `school_groups` WRITE;
 /*!40000 ALTER TABLE `school_groups` DISABLE KEYS */;
-INSERT INTO `school_groups` VALUES (1,1,'A',0),(2,1,'B',0),(3,1,'C',0),(4,1,'D',0),(5,2,'A',0),(6,2,'B',0),(7,2,'C',0),(8,2,'D',0),(9,3,'A',0),(10,3,'B',0),(11,3,'C',0),(12,3,'D',0),(13,4,'A',0),(14,4,'B',0),(15,4,'C',0),(16,4,'D',0),(17,5,'A',0),(18,5,'B',0),(19,5,'C',0),(20,5,'D',0),(21,6,'A',0),(22,6,'B',0),(23,6,'C',0),(24,6,'D',0);
+INSERT INTO `school_groups` VALUES (25,7,'A',0),(26,7,'B',0),(27,7,'C',0),(28,7,'D',0),(29,8,'A',0),(30,8,'B',0),(31,8,'C',0),(32,8,'D',0),(33,9,'A',0),(34,9,'B',0),(35,9,'C',0),(36,9,'D',0);
 /*!40000 ALTER TABLE `school_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,7 +171,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `subjects` WRITE;
 /*!40000 ALTER TABLE `subjects` DISABLE KEYS */;
-INSERT INTO `subjects` VALUES (1,'ESP','Español',1),(2,'MAT','Matemáticas',1),(3,'HIS','Historia',1),(4,'ING','Inglés',1),(5,'FCE','Formación Cívica y Ética',1),(6,'ART','Artes',1),(7,'TEC','Tecnologías',1),(8,'ESP','Español',2),(9,'MAT','Matemáticas',2),(10,'HIS','Historia',2),(11,'ING','Inglés',2),(12,'FCE','Formación Cívica y Ética',2),(13,'ART','Artes',2),(14,'TEC','Tecnologías',2),(15,'ESP','Español',3),(16,'MAT','Matemáticas',3),(17,'HIS','Historia',3),(18,'ING','Inglés',3),(19,'FCE','Formación Cívica y Ética',3),(20,'ART','Artes',3),(21,'TEC','Tecnologías',3),(22,'ESP','Español',4),(23,'MAT','Matemáticas',4),(24,'HIS','Historia',4),(25,'ING','Inglés',4),(26,'FCE','Formación Cívica y Ética',4),(27,'ART','Artes',4),(28,'TEC','Tecnologías',4),(29,'ESP','Español',5),(30,'MAT','Matemáticas',5),(31,'HIS','Historia',5),(32,'ING','Inglés',5),(33,'FCE','Formación Cívica y Ética',5),(34,'ART','Artes',5),(35,'TEC','Tecnologías',5),(36,'ESP','Español',6),(37,'MAT','Matemáticas',6),(38,'HIS','Historia',6),(39,'ING','Inglés',6),(40,'FCE','Formación Cívica y Ética',6),(41,'ART','Artes',6),(42,'TEC','Tecnologías',6);
+INSERT INTO `subjects` VALUES (43,'ESP','Español',7),(44,'MAT','Matemáticas',7),(45,'HIS','Historia',7),(46,'ING','Inglés',7),(47,'FCE','Formación Cívica y Ética',7),(48,'ART','Artes',7),(49,'TEC','Tecnologías',7),(50,'ESP','Español',8),(51,'MAT','Matemáticas',8),(52,'HIS','Historia',8),(53,'ING','Inglés',8),(54,'FCE','Formación Cívica y Ética',8),(55,'ART','Artes',8),(56,'TEC','Tecnologías',8),(57,'ESP','Español',9),(58,'MAT','Matemáticas',9),(59,'HIS','Historia',9),(60,'ING','Inglés',9),(61,'FCE','Formación Cívica y Ética',9),(62,'ART','Artes',9),(63,'TEC','Tecnologías',9);
 /*!40000 ALTER TABLE `subjects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,7 +181,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'master','$2a$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',1,0),(2,'test','$2a$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',2,0);
+INSERT INTO `users` VALUES (1,'master','$2a$10$Af/zq0zcfx5GcsdQAX/qbeqaZmP8WHHZslBTexTs6c.PC8nu3Ql0.',1,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -194,4 +194,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-07 23:00:21
+-- Dump completed on 2015-11-14 21:23:05

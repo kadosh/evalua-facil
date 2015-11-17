@@ -1,3 +1,5 @@
+var config = require('./env')[process.env.NODE_ENV || 'development'];
+
 // Load required packages
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -27,6 +29,7 @@ app.set('view engine', 'jade');
 
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.use(cors());
 
@@ -154,8 +157,8 @@ app.listen(3000);
  
  router.route('/api/grades/:grade_number')
  .get(gradesController.getGrade)
-
-
+ 
+ 
  
  router.route('/api/faculty-members/:faculty_member_id')
  .get(facultyMembersController.getFacultyMember);

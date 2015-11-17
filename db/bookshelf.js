@@ -1,16 +1,19 @@
-// In a file named something like bookshelf.js
-var dbConfig = {
-    client: 'mysql',
-    debug: true,
-    connection: {
-        host: 'localhost',
-        user: 'root',
-        password: 'pass.word1',
-        database: 'evalua',
-        charset: 'utf8'
-    }
-};
+(function () {
+    var config = require('../env')[process.env.NODE_ENV || 'development'];
 
-var knex = require('knex')(dbConfig);
-var bookshelf = require('bookshelf')(knex);
-module.exports = bookshelf;
+    var dbConfig = {
+        client: 'mysql',
+        debug: config.DEBUG,
+        connection: {
+            host: config.DB_HOST,
+            user: config.DB_USER,
+            password: config.DB_PASSWORD,
+            database: config.DB_NAME,
+            charset: 'utf8'
+        }
+    };
+
+    var knex = require('knex')(dbConfig);
+    var bookshelf = require('bookshelf')(knex);
+    module.exports = bookshelf;
+})();

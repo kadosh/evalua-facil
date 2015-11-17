@@ -3,6 +3,9 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
 var httpUtils = require('../utils/http-utils');
+var Promise = require('bluebird');
+var errorDef = require('../utils/form-errors');
+var Checkit = require('checkit');
 
 (function () {
     /**
@@ -12,6 +15,7 @@ var httpUtils = require('../utils/http-utils');
     var that;
     var formErrors = [];
     var postedAllocations = [];
+    var allocsWithErrors = [];
 
     var AllocsHandler = function () {
         that = this;
@@ -36,7 +40,7 @@ var httpUtils = require('../utils/http-utils');
                 }
 
                 return that.subjectRepository
-                    .getAll()
+                    .getAll({})
                     .then(function (subjects) {
 
                         return that.groupRepository
@@ -65,7 +69,7 @@ var httpUtils = require('../utils/http-utils');
                                         if (!foundAllocation && subject.get('grade_id') == group.get('grade_id')) {
                                             availableAllocs.push({
                                                 grade: grade,
-                                                group: group.omit('grade'),
+                                                school_group: group.omit('grade'),
                                                 subject: subject,
                                                 friendly_name: grade.get('grade_number') + group.get('group_name') + ' ' + subject.get('abbreviation')
                                             });
@@ -77,24 +81,38 @@ var httpUtils = require('../utils/http-utils');
                             });
                     });
             })
-            .catch(function (error) {
-                console.log(error);
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
-            })
+        /*.catch(function (error) {
+         console.log(error);
+         res.status(500).json({
+         error: true,
+         data: {
+         message: error.message
+         }
+         });
+         });*/
     };
 
-    AllocsHandler.prototype._addAllocAsync = function (req, res, grade_number, group_id, subject_id, faculty_member_id) {
+    AllocsHandler.prototype._addAllocAsync = function (req, res, alloc) {
+
+        var grade_number = parseInt(alloc.grade_number),
+            group_id = parseInt(alloc.school_group_id),
+            faculty_member_id = parseInt(alloc.faculty_member_id),
+            subject_id = parseInt(alloc.subject_id);
+
+        var possibleError = {
+            grade_number: grade_number,
+            school_group_id: group_id,
+            subject_id: subject_id,
+            error: ""
+        };
 
         return that.gradeRepository
             .findByNumber(grade_number)
             .then(function (grade) {
 
                 if (!grade) {
+                    possibleError.error = errorDef.def.GRADE_NUMBER_NOT_FOUND;
+                    allocsWithErrors.push(possibleError);
                     throw new Errors.NotFoundEntity("The provided grade number does not exist");
                 }
 
@@ -103,6 +121,8 @@ var httpUtils = require('../utils/http-utils');
                     .then(function (group) {
 
                         if (!group) {
+                            possibleError.error = errorDef.def.SCHOOL_GROUP_NOT_FOUND;
+                            allocsWithErrors.push(possibleError);
                             throw new Errors.NotFoundEntity("The provided group id does not exist");
                         }
 
@@ -111,6 +131,8 @@ var httpUtils = require('../utils/http-utils');
                             .then(function (subject) {
 
                                 if (!subject) {
+                                    possibleError.error = errorDef.def.SUBJECT_NOT_FOUND;
+                                    allocsWithErrors.push(possibleError);
                                     throw new Errors.NotFoundEntity("The provided subject id does not exist");
                                 }
 
@@ -119,6 +141,8 @@ var httpUtils = require('../utils/http-utils');
                                     .then(function (facultyMember) {
 
                                         if (!facultyMember) {
+                                            possibleError.error = errorDef.def.FACULTY_NOT_FOUND;
+                                            allocsWithErrors.push(possibleError);
                                             throw new Errors.NotFoundEntity("The provided faculty member id does not exist");
                                         }
 
@@ -130,6 +154,8 @@ var httpUtils = require('../utils/http-utils');
                                             .then(function (alloc) {
 
                                                 if (alloc) {
+                                                    possibleError.error = errorDef.def.ALLOCATION_IN_USE;
+                                                    allocsWithErrors.push(possibleError);
                                                     throw new Errors.NotFoundEntity("The provided allocation is already assigned");
                                                 }
 
@@ -140,105 +166,68 @@ var httpUtils = require('../utils/http-utils');
                                                         faculty_member_id: faculty_member_id
                                                     })
                                                     .then(function (alloc) {
-                                                        res.json(alloc);
+                                                        postedAllocations.push(alloc);
                                                     });
                                             });
                                     });
                             });
                     });
-            })
-            .catch(function (error) {
-                formErrors.push(error);
             });
     };
 
     AllocsHandler.prototype.addAllocation = function (req, res) {
-
+        var faculty_member_id = req.params.faculty_member_id;
         var promises = [];
-
         var allocations = req.body;
 
+        var modelRules = new Checkit({
+            grade_number: errorDef.rules.REQUIRED_FIELD_RULE,
+            school_group_id: errorDef.rules.REQUIRED_FIELD_RULE,
+            subject_id: errorDef.rules.REQUIRED_FIELD_RULE
+        });
+
+        var validationPromises = [];
+
         for (var i = 0; i < allocations.length; i++) {
-            promises.push(that._addAllocAsync(req, res, grade_number, group_id, subject_id, faculty_member_id));
+            var alloc = allocations[i];
+            alloc.faculty_member_id = faculty_member_id;
+
+            var validationPromise = modelRules.run(alloc);
+            validationPromises.push(validationPromise);
         }
 
-        if (formErrors.length > 0) {
-            // handle several errors
-            httpUtils.handleGeneralError(req, res, {message: "don't know"});
-        } else {
-            res.json(postedAllocations);
-        }
+        var validationErrors = [];
 
-        var grade_number = parseInt(req.body.grade_number),
-            group_id = parseInt(req.body.group_id),
-            faculty_member_id = parseInt(req.params.faculty_member_id),
-            subject_id = parseInt(req.body.subject_id);
+        Promise.all(validationPromises.map(function (promise) {
+            return promise.reflect();
+        })).each(function (inspection) {
+            if (!inspection.isFulfilled()) {
+                validationErrors.push(inspection.reason());
+            }
+        }).then(function () {
+            if (validationErrors.length > 0) {
+                httpUtils.handleFormErrorOnAllocations(req, res, errorDef.def.ERRORS_ON_ALLOCATIONS_FORM, validationErrors);
+                return;
+            } else {
+                for (var i = 0; i < allocations.length; i++) {
+                    var alloc = allocations[i];
+                    alloc.faculty_member_id = faculty_member_id;
 
-        return that.gradeRepository
-            .findByNumber(grade_number)
-            .then(function (grade) {
-
-                if (!grade) {
-                    throw new Errors.NotFoundEntity("The provided grade number does not exist");
+                    promises.push(that._addAllocAsync(req, res, alloc));
                 }
 
-                return that.groupRepository
-                    .findById(group_id)
-                    .then(function (group) {
+                allocsWithErrors = [];
+                postedAllocations = [];
 
-                        if (!group) {
-                            throw new Errors.NotFoundEntity("The provided group id does not exist");
-                        }
-
-                        return that.subjectRepository
-                            .findById(subject_id)
-                            .then(function (subject) {
-
-                                if (!subject) {
-                                    throw new Errors.NotFoundEntity("The provided subject id does not exist");
-                                }
-
-                                return that.facultyMemberRepository
-                                    .getOne({id: faculty_member_id}, {})
-                                    .then(function (facultyMember) {
-
-                                        if (!facultyMember) {
-                                            throw new Errors.NotFoundEntity("The provided faculty member id does not exist");
-                                        }
-
-                                        return that.allocationRepository
-                                            .getOne({
-                                                school_group_id: group.get('id'),
-                                                subject_id: subject.get('id')
-                                            })
-                                            .then(function (alloc) {
-
-                                                if (alloc) {
-                                                    throw new Errors.NotFoundEntity("The provided allocation is already assigned");
-                                                }
-
-                                                return that.allocationRepository
-                                                    .insert({
-                                                        school_group_id: group_id,
-                                                        subject_id: subject_id,
-                                                        faculty_member_id: faculty_member_id
-                                                    })
-                                                    .then(function (alloc) {
-                                                        res.json(alloc);
-                                                    });
-                                            });
-                                    });
-                            })
-                    });
-            })
-            .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
+                Promise.all(promises.map(function (promise) {
+                    return promise.reflect();
+                })).each(function (inspection) {
+                }).then(function () {
+                    console.log(postedAllocations, allocsWithErrors);
+                    httpUtils.handlePostedAllocations(req, res, postedAllocations, allocsWithErrors);
                 });
-            });
+            }
+        });
     };
 
     AllocsHandler.prototype.deleteForFacultyMember = function (req, res) {

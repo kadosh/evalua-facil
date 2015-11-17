@@ -1,5 +1,5 @@
 (function () {
-    var debug = false;
+    var debug = true;
 
     module.exports.handleGeneralError = function (req, res, error, formErrors) {
 
@@ -22,6 +22,30 @@
         res.json(result);
     };
 
+    module.exports.handleFormErrorOnAllocations = function (req, res, message, extra) {
+
+        res.status(500);
+
+        var result = {
+            error: true,
+            success: false,
+            message: message,
+            extra: extra
+        };
+
+        res.json(result);
+    };
+
+    module.exports.handlePostedAllocations = function (req, res, data, errors) {
+
+        res.json({
+            data: data,
+            fail: errors,
+            success: true,
+            error: false
+        });
+    };
+
     module.exports.success = function (req, res, data) {
         if (debug) {
             console.log(data);
@@ -29,7 +53,7 @@
 
         res.json({
             data: data,
-            sucess: true,
+            success: true,
             error: false
         });
     };

@@ -1,7 +1,6 @@
-var bookshelf = require('./bookshelf');
-var Checkit = require('checkit');
-
 (function () {
+    var bookshelf = require('./bookshelf');
+    var Checkit = require('checkit');
 
     module.exports.Bookshelf = bookshelf;
 
@@ -37,7 +36,7 @@ var Checkit = require('checkit');
 
     module.exports.StudentEvaluationDetail = bookshelf.Model.extend({
         tableName: 'student_evaluation_details',
-        indicator: function(){
+        indicator: function () {
             return this.belongsTo(module.exports.Indicator);
         }
     });

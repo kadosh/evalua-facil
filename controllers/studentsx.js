@@ -136,14 +136,14 @@ var Checkit = require('checkit');
         var principalUser = req.user;
 
         var modelRules = new Checkit({
-            first_name: formErrors.REQUIRED_FIELD_RULE,
-            last_name: formErrors.REQUIRED_FIELD_RULE,
-            mothers_name: formErrors.REQUIRED_FIELD_RULE,
+            first_name: formErrors.rules.REQUIRED_FIELD_RULE,
+            last_name: formErrors.rules.REQUIRED_FIELD_RULE,
+            mothers_name: formErrors.rules.REQUIRED_FIELD_RULE,
             school_group_id: [
-                formErrors.REQUIRED_FIELD_RULE,
-                formErrors.INVALID_ID
+                formErrors.rules.REQUIRED_FIELD_RULE,
+                formErrors.rules.INVALID_ID
             ],
-            gender: formErrors.REQUIRED_FIELD_RULE
+            gender: formErrors.rules.REQUIRED_FIELD_RULE
         });
 
         var validationPromise = modelRules.run(req.body);
@@ -176,6 +176,7 @@ var Checkit = require('checkit');
                 }
             })
             .caught(Checkit.Error, function (error) {
+                res.status(400);
                 httpUtils.handleGeneralError(req, res, error, error.toJSON());
             });
     };
