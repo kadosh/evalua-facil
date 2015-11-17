@@ -12,6 +12,14 @@ var Errors = require('../utils/custom-errors');
         that = this;
     };
 
+    BimesterRepository.prototype.getAll = function (query, options) {
+        options = options || {};
+
+        return dbContext.Bimester
+            .query(query)
+            .fetchAll(options);
+    };
+
     BimesterRepository.prototype.getOne = function (query, options) {
         options = options || {};
 
@@ -23,10 +31,21 @@ var Errors = require('../utils/custom-errors');
     BimesterRepository.prototype.getCurrent = function (date) {
         return dbContext.Bimester
             .query(function (qb) {
-                //qb.where(date, '>=', 'start_timestamp').andWhere(date, '<=', 'end_timestamp');
                 qb.where('start_timestamp', '<=', date).andWhere('end_timestamp', '>=', date);
             })
             .fetch();
+    };
+
+    BimesterRepository.prototype.update = function (data, saveOptions) {
+        saveOptions = saveOptions || {};
+        return dbContext.Bimester
+            .forge({
+                id: data.id
+            })
+            .save({
+                start_timestamp: data.start_timestamp,
+                end_timestamp: data.end_timestamp
+            }, saveOptions);
     };
 
     module.exports.BimesterRepository = BimesterRepository;
