@@ -283,9 +283,8 @@ var Checkit = require('checkit');
     };
 
     AllocsHandler.prototype.getForFacultyMember = function (req, res) {
-        var faculty_member_id = req.params.faculty_member_id;
+        var faculty_member_id = parseInt(req.params.faculty_member_id);
 
-        console.log(faculty_member_id);
         return that.facultyMemberRepository
             .getOne({
                 id: faculty_member_id
@@ -293,6 +292,8 @@ var Checkit = require('checkit');
                 withRelated: ['allocations.group', 'allocations.subject', 'allocations.group.grade']
             })
             .then(function (facultyMember) {
+                
+                
                 if (!facultyMember) {
                     throw new Errors.NotFoundEntity("The provided faculty member id was not found");
                 }

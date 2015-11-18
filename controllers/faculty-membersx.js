@@ -2,6 +2,7 @@
 var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
+var httpUtils = require('../utils/http-utils');
 var bcrypt = require('bcryptjs');
 
 (function () {
@@ -36,17 +37,47 @@ var bcrypt = require('bcryptjs');
 
     FacultyMembersHandler.prototype.getAll = function (req, res) {
         return that.facultyMemberRepository
-            .getMany(null, {withRelated: ['user.role']})
+            .getMany(null, {withRelated: ['user.role', 'allocations.group', 'allocations.subject', 'allocations.group.grade']})
             .then(function (items) {
-                res.send(items.toJSON());
+
+                var final = [];
+
+                items.forEach(function (facultyMember) {
+                    var allocationsModel = facultyMember.related('allocations'),
+                        allocations = [],
+                        user = facultyMember.related('user'),
+                        role = user.related('role');
+
+                    allocationsModel.forEach(function (alloc) {
+                        var group = alloc.related('group'),
+                            grade = group.related('grade'),
+                            subject = alloc.related('subject');
+
+                        allocations.push({
+                            id: alloc.get('id'),
+                            subject: subject.omit(['grade_id', 'grade']),
+                            group: group.omit(['grade_id', 'grade']),
+                            grade: grade,
+                            friendly_name: grade.get('grade_number') + group.get('group_name') + ' ' + subject.get('abbreviation')
+                        });
+                    });
+
+                    final.push({
+                        first_name: facultyMember.get('first_name'),
+                        last_name: facultyMember.get('last_name'),
+                        role_title: role.get('title'),
+                        title: facultyMember.get('title'),
+                        email: facultyMember.get('email'),
+                        contact_number: facultyMember.get('contact_number'),
+                        allocations: allocations
+                    });
+
+                });
+
+                httpUtils.success(req, res, final);
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 

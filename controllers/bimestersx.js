@@ -14,7 +14,7 @@ var httpUtils = require('../utils/http-utils');
 
     BimestersHandler.prototype.getAll = function (req, res) {
         return that.bimesterRepository
-            .getAll()
+            .getAll({})
             .then(function (items) {
                 httpUtils.success(req, res, items);
             })
