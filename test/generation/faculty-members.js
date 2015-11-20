@@ -2,6 +2,7 @@ var should = require('chai').should,
     expect = require('chai').expect,
     supertest = require('supertest'),
     conf = require('../_config'),
+    mod = require('../modular-parts'),
     data = require('../data-for-mockups'),
     utils = require('../utils'),
     api = supertest(conf.host);
