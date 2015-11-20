@@ -78,7 +78,7 @@ var Checkit = require('checkit');
                                     });
                                 });
 
-                                res.json(availableAllocs);
+                                httpUtils.success(req, res, availableAllocs);
                             });
                     });
             })
