@@ -46,10 +46,10 @@ describe('FACULTY MEMBERS - Director', function () {
                 if (err) {
                     throw err;
                 }
-                expect(res.body.faculty_member.first_name).to.be.equal(director.first_name);
-                expect(res.body.faculty_member.last_name).to.be.equal(director.last_name);
-                expect(res.body.user_data.username).to.be.equal(director.username);
-                expect(res.body.user_data.role).to.be.equal(director.role_title);
+                expect(res.body.data.faculty_member.first_name).to.be.equal(director.first_name);
+                expect(res.body.data.faculty_member.last_name).to.be.equal(director.last_name);
+                expect(res.body.data.user_data.username).to.be.equal(director.username);
+                expect(res.body.data.user_data.role).to.be.equal(director.role_title);
                 done();
             });
     });
