@@ -58,6 +58,8 @@ var bcrypt = require('bcryptjs');
                     });
 
                     final.push({
+                        id: facultyMember.get('id'),
+                        user_data: facultyMember.related('user').omit(['password_hash']),
                         first_name: facultyMember.get('first_name'),
                         last_name: facultyMember.get('last_name'),
                         role_title: role.get('title'),

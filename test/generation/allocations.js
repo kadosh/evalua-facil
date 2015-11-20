@@ -67,8 +67,8 @@ describe('GET ALLOCATIONS', function () {
                             });
                         });
 
-                        done();
                         goInsert();
+                        done();
                     });
             });
     });
@@ -79,7 +79,7 @@ function goInsert() {
     describe('PUT ALLOCATIONS', function () {
         allocsToBeInserted.forEach(function (row) {
 
-            it("should PUT " + row.allocs.length + " alloc(s) for " + row.faculty.user.username, function (done) {
+            it("should PUT " + row.allocs.length + " alloc(s) for " + row.faculty.first_name, function (done) {
                 var parsedAllocs = [];
 
                 for (var x = 0; x < row.allocs.length; x++) {
