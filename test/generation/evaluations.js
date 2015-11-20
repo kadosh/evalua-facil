@@ -73,10 +73,7 @@ teachers.forEach(function (teacher) {
     teacher.username += suffix;
 });
 
-
 before(function () {
-
-    console.log("aaaaaaaaaaaaa token");
     mod.getMasterToken({api: api, expect: expect, it: it}, out);
 });
 

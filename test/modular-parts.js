@@ -2,10 +2,8 @@
     var utils = require('./utils');
     var authClient = "Basic d2ViY2xpZW50OnBhc3N3b3Jk";
     
-    
-
     module.exports.getMasterToken = function (tApi, settings) {
-        console.log("got here");
+
         tApi.it('should GET master token', function (done) {
 
             tApi.api.post('/oauth/token')

@@ -29,28 +29,7 @@ teachers.forEach(function (teacher) {
 });
 
 before(function () {
-    it('should GET master token', function (done) {
-        api.post('/oauth/token')
-            .set('Content-Type', 'application/x-www-form-urlencoded')
-            .set('Authorization', authClient)
-            .send({
-                username: "master",
-                password: "pass.word1",
-                grant_type: 'password'
-            })
-            .expect(200)
-            .end(function (err, res) {
-                if (err) {
-                    throw err;
-                }
-
-                expect(res.body.access_token).to.be.a('string');
-                expect(res.body.refresh_token).to.be.a('string');
-                token = res.body.access_token;
-
-                done();
-            });
-    });
+    mod.getMasterToken({api: api, expect: expect, it: it}, out);
 });
 
 describe('FACULTY MEMBERS - Director', function () {

@@ -16,7 +16,6 @@ before(function () {
     mod.getMasterToken({api: api, expect: expect, it: it}, out);
 });
 
-
 var groups = [];
 
 describe('GET ALL GROUPS', function () {
