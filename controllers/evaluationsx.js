@@ -543,7 +543,9 @@ var Promise = require('bluebird');
                                                 that._processInsertIndicator(evaluationId, 5, math_score, status);
                                             }
 
-                                            that._processInsertIndicator(evaluationId, 6, friendship_score, status);
+                                            if (subject.get('abbreviation') == 'FCE') {
+                                                that._processInsertIndicator(evaluationId, 6, friendship_score, status);
+                                            }
 
                                             var lambdaExecuteSaveDetails = function () {
                                                 return Promise.all(detailPromises)
@@ -556,8 +558,7 @@ var Promise = require('bluebird');
                                                                 details: {
                                                                     absences_count: absences_count,
                                                                     participation_score: participation_score,
-                                                                    performance_score: performance_score,
-                                                                    friendship_score: friendship_score
+                                                                    performance_score: performance_score
                                                                 }
                                                             }
                                                         };
@@ -568,6 +569,10 @@ var Promise = require('bluebird');
 
                                                         if (subject.get('abbreviation') == 'ESP') {
                                                             result.evaluation.details.reading_score = reading_score;
+                                                        }
+                                                        
+                                                        if (subject.get('abbreviation') == 'FCE') {
+                                                            result.evaluation.details.friendship_score = friendship_score;
                                                         }
 
 
@@ -626,8 +631,7 @@ var Promise = require('bluebird');
                                                         details: {
                                                             absences_count: absences_count,
                                                             participation_score: participation_score,
-                                                            performance_score: performance_score,
-                                                            friendship_score: friendship_score
+                                                            performance_score: performance_score
                                                         }
                                                     }
                                                 };
@@ -638,6 +642,10 @@ var Promise = require('bluebird');
 
                                                 if (subject.get('abbreviation') == 'ESP') {
                                                     result.evaluation.details.reading_score = reading_score;
+                                                }
+                                                
+                                                if (subject.get('abbreviation') == 'FCE') {
+                                                    result.evaluation.details.friendship_score = friendship_score;
                                                 }
 
 
