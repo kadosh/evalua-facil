@@ -97,14 +97,15 @@ router.route('/api/grades/:grade_number')
 // Api endpoints for Allocations
 router.route('/api/allocations/faculty-member/:faculty_member_id')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), allocationsController.put)
-    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), allocationsController.deleteForFacultyMember)
+    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), allocationsController.delete)
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), allocationsController.getForFacultyMember);
 
 router.route('/api/allocations/available')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), allocationsController.getAvailable);
 
 router.route('/api/students')
-    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.put);
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.put)
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), studentsController.getAll);
 
 router.route('/api/students/in-group/:school_group_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher", "director"]), studentsController.getByGroup);
@@ -125,7 +126,7 @@ router.route('/api/evaluations/bimester/:bimester_number/group/all/:school_group
 
 
 router.route('/api/evaluations/bimester/:bimester_number/student/:student_id')
-    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["teacher"]), evaluationsController.put);
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), evaluationsController.put);
 
 // Api endpoints for Bimesters
 router.route('/api/bimesters')
@@ -134,15 +135,6 @@ router.route('/api/bimesters')
 router.route('/api/bimesters/:bimester_number')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), bimestersController.getOne)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), bimestersController.update);
-
-// Api endpoints for Revisions
-router.route('/api/revisions/me/pending')
-    //.get(oauthStrategies.isBearerAuthenticated, revisionsController.getMePendingRevisions)
-    .put(oauthStrategies.isBearerAuthenticated, revisionsController.put);
-
-// router.route('/api/revisions/:revision_id')
-// .get(oauthStrategies.isBearerAuthenticated, revisionsController.getOne)
-// .put(oauthStrategies.isBearerAuthenticated, revisionsController.put);
 
 router.route('/api/testing')
     .get(testController.getTest);

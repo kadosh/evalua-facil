@@ -23,15 +23,10 @@ var bcrypt = require('bcryptjs');
                     throw new Errors.NotFoundEntity("The requested faculty member id was not found");
                 }
 
-                res.json(facultyMember);
+                httpUtils.success(req, res, facultyMember);
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -122,14 +117,15 @@ var bcrypt = require('bcryptjs');
                                         }, {transacting: t})
                                         .then(function (facultyMember) {
 
-                                            // Return the result
-                                            res.json({
+                                            var result = {
                                                 faculty_member: facultyMember,
                                                 user_data: {
                                                     username: user.get('username'),
                                                     role: role.get('title')
                                                 }
-                                            });
+                                            };
+
+                                            httpUtils.success(req, res, result);
                                         });
 
                                 })
@@ -167,16 +163,11 @@ var bcrypt = require('bcryptjs');
                         email: req.body.email
                     })
                     .then(function (result) {
-                        res.json(result);
+                        httpUtils.success(req, res, result);
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -193,17 +184,12 @@ var bcrypt = require('bcryptjs');
 
                 return that.userRepository
                     .lockUser(facultyMember.get('user_id'))
-                    .then(function (result) {
-                        res.json({message: 'The user has been blocked and will not be able to access the system.'})
+                    .then(function () {
+                        httpUtils.success(req, res, {message: 'The user has been blocked and will not be able to access the system.'});
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -221,16 +207,11 @@ var bcrypt = require('bcryptjs');
                 return that.userRepository
                     .unlockUser(facultyMember.get('user_id'))
                     .then(function (result) {
-                        res.json({message: 'The user is now able to access the system.'})
+                        httpUtils.success(req, res, {message: 'The user is now able to access the system.'});
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 

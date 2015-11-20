@@ -2,6 +2,7 @@
 var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
+var httpUtils = require('../utils/http-utils');
 
 (function () {
     var that;
@@ -24,16 +25,11 @@ var repos = require('../db/repositories');
                 return that.groupRepository
                     .findByGradeNumber(grade.get('grade_number'))
                     .then(function (items) {
-                        res.send(items.toJSON());
+                        httpUtils.success(req, res, items);
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -41,15 +37,10 @@ var repos = require('../db/repositories');
         return that.groupRepository
             .getAll()
             .then(function (items) {
-                res.send(items.toJSON());
+                httpUtils.success(req, res, items);
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -80,17 +71,12 @@ var repos = require('../db/repositories');
                                 total_students: -1
                             })
                             .then(function (group) {
-                                res.json(group);
-                            })
+                                httpUtils.success(req, res, group);
+                            });
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -120,17 +106,12 @@ var repos = require('../db/repositories');
                                 group_name: group_name
                             })
                             .then(function (group) {
-                                res.json(group);
+                                httpUtils.success(req, res, group);
                             });
                     });
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 

@@ -31,8 +31,8 @@ describe('GET ALLOCATIONS', function () {
                     throw err;
                 }
 
-                var allocs = res.body;
-                expect(res.body.length).to.not.be.empty;
+                var allocs = res.body.data;
+                expect(res.body.data.length).to.not.be.empty;
 
                 api.get('/api/faculty-members')
                     .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -40,9 +40,9 @@ describe('GET ALLOCATIONS', function () {
                     .expect(200)
                     .end(function (err, res) {
 
-                        expect(res.body.length).to.not.be.empty;
+                        expect(res.body.data.length).to.not.be.empty;
 
-                        var faculties = res.body;
+                        var faculties = res.body.data;
                         var allocRatio = Math.floor(parseInt(allocs.length / faculties.length));
 
                         expect(allocRatio).to.be.above(0);
@@ -110,3 +110,4 @@ function goInsert() {
         });
     });
 }
+;

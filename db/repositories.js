@@ -518,6 +518,13 @@ var Errors = require('../utils/custom-errors');
             .forge(query)
             .destroy();
     };
+    
+    AllocationRepository.prototype.deleteById = function (id, deleteOptions) {
+        deleteOptions = deleteOptions || {};
+        return dbContext.Allocation
+            .forge({ id : id})
+            .destroy();
+    };
 
     module.exports.AllocationRepository = AllocationRepository;
 })();

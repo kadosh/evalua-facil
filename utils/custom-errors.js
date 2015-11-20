@@ -87,4 +87,15 @@
 	ForbiddenGroupAccessError.prototype.constructor = ForbiddenGroupAccessError;
 	
 	module.exports.ForbiddenGroupAccessError = ForbiddenGroupAccessError;
+    
+    function AllocationNotBelongingToProvidedFacultyError(message) {
+	  this.name = 'AllocationNotBelongingToProvidedFacultyError';
+	  this.message = message || "Faculty doesn't have the provided allocation assigned.";
+	  this.stack = (new Error()).stack;
+	}
+
+	AllocationNotBelongingToProvidedFacultyError.prototype = Object.create(Error.prototype);
+	AllocationNotBelongingToProvidedFacultyError.prototype.constructor = AllocationNotBelongingToProvidedFacultyError;
+	
+	module.exports.AllocationNotBelongingToProvidedFacultyError = AllocationNotBelongingToProvidedFacultyError;
 })();

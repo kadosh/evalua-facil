@@ -15,6 +15,7 @@ var Checkit = require('checkit');
     var that;
     var formErrors = [];
     var postedAllocations = [];
+    var removedAllocations = [];
     var allocsWithErrors = [];
 
     var AllocsHandler = function () {
@@ -175,6 +176,40 @@ var Checkit = require('checkit');
             });
     };
 
+    AllocsHandler.prototype._removeAllocAsync = function (req, res, alloc) {
+
+        var allocation_id = parseInt(alloc.allocation_id),
+            faculty_member_id = parseInt(alloc.faculty_member_id);
+
+        var possibleError = {
+            allocation_id: allocation_id,
+            error: ""
+        };
+
+        return that.allocationRepository
+            .findById(allocation_id)
+            .then(function (allocation) {
+
+                if (!allocation) {
+                    possibleError.error = errorDef.def.ALLOCATION_NOT_FOUND;
+                    allocsWithErrors.push(possibleError);
+                    throw new Errors.NotFoundEntity("The provided allocation id does not exist");
+                }
+
+                if (allocation.get('faculty_member_id') != faculty_member_id) {
+                    possibleError.error = errorDef.def.ALLOCATION_DOESNT_BELONG_TO_FACULTY;
+                    allocsWithErrors.push(possibleError);
+                    throw new Errors.AllocationNotBelongingToProvidedFacultyError();
+                }
+
+                return that.allocationRepository
+                    .deleteById(allocation_id)
+                    .then(function () {
+                        removedAllocations.push(allocation_id);
+                    });
+            });
+    };
+
     AllocsHandler.prototype.addAllocation = function (req, res) {
         var faculty_member_id = req.params.faculty_member_id;
         var promises = [];
@@ -184,6 +219,60 @@ var Checkit = require('checkit');
             grade_number: errorDef.rules.REQUIRED_FIELD_RULE,
             school_group_id: errorDef.rules.REQUIRED_FIELD_RULE,
             subject_id: errorDef.rules.REQUIRED_FIELD_RULE
+        });
+
+
+        var validationPromises = [];
+
+        for (var i = 0; i < allocations.length; i++) {
+            var alloc = allocations[i];
+            alloc.faculty_member_id = faculty_member_id;
+
+            var validationPromise = modelRules.run(alloc);
+            validationPromises.push(validationPromise);
+        }
+
+        var validationErrors = [];
+
+        Promise.all(validationPromises.map(function (promise) {
+            return promise.reflect();
+        })).each(function (inspection) {
+            if (!inspection.isFulfilled()) {
+                validationErrors.push(inspection.reason());
+            }
+        }).then(function () {
+            if (validationErrors.length > 0) {
+                httpUtils.handleFormErrorOnAllocations(req, res, errorDef.def.ERRORS_ON_ALLOCATIONS_FORM, validationErrors);
+                return;
+            } else {
+
+                allocsWithErrors = [];
+                postedAllocations = [];
+
+                for (var i = 0; i < allocations.length; i++) {
+                    var alloc = allocations[i];
+                    alloc.faculty_member_id = faculty_member_id;
+
+                    promises.push(that._addAllocAsync(req, res, alloc));
+                }
+
+                Promise.all(promises.map(function (promise) {
+                    return promise.reflect();
+                })).each(function (inspection) {
+                }).then(function () {
+                    httpUtils.handlePostedAllocations(req, res, postedAllocations, allocsWithErrors);
+                });
+            }
+        });
+    };
+
+    AllocsHandler.prototype.removeAllocation = function (req, res) {
+        var faculty_member_id = req.params.faculty_member_id;
+        var promises = [];
+        var allocations = req.body;
+
+        var modelRules = new Checkit({
+            allocation_id: errorDef.rules.REQUIRED_FIELD_RULE
         });
 
         var validationPromises = [];
@@ -209,77 +298,27 @@ var Checkit = require('checkit');
                 httpUtils.handleFormErrorOnAllocations(req, res, errorDef.def.ERRORS_ON_ALLOCATIONS_FORM, validationErrors);
                 return;
             } else {
+
+                allocsWithErrors = [];
+                removedAllocations = [];
+
+                console.log(allocations);
+
                 for (var i = 0; i < allocations.length; i++) {
                     var alloc = allocations[i];
                     alloc.faculty_member_id = faculty_member_id;
 
-                    promises.push(that._addAllocAsync(req, res, alloc));
+                    promises.push(that._removeAllocAsync(req, res, alloc));
                 }
-
-                allocsWithErrors = [];
-                postedAllocations = [];
 
                 Promise.all(promises.map(function (promise) {
                     return promise.reflect();
                 })).each(function (inspection) {
                 }).then(function () {
-                    console.log(postedAllocations, allocsWithErrors);
-                    httpUtils.handlePostedAllocations(req, res, postedAllocations, allocsWithErrors);
+                    httpUtils.handlePostedAllocations(req, res, removedAllocations, allocsWithErrors);
                 });
             }
         });
-    };
-
-    AllocsHandler.prototype.deleteForFacultyMember = function (req, res) {
-        var faculty_member_id = req.params.faculty_member_id,
-            allocation_id = req.body.allocation_id;
-
-        return that.allocationRepository
-            .getOne({
-                id: allocation_id,
-                faculty_member_id: faculty_member_id
-            }, {
-            })
-            .then(function (alloc) {
-
-                if (!alloc) {
-                    throw new Errors.NotFoundEntity("The provided " +
-                        "allocation id was not found or is assigned to the provided " +
-                        "faculty member.");
-                }
-
-                return that.evaluationRepository
-                    .getOne({
-                        allocation_id: alloc.get('id')
-                    })
-                    .then(function (evaluation) {
-
-                        if (!evaluation) {
-                            // Procceed to delete the allocation
-
-                            return that.allocationRepository
-                                .delete({id: alloc.get('id')})
-                                .then(function (result) {
-
-                                    // TODO: Make sure the deletion was done correctly
-                                    res.json({success: true});
-                                });
-                        }
-                        else {
-                            // Show error message for now
-                            throw new Errors.InvalidOperationError("There are" +
-                                " some evaluations related to this allocation.")
-                        }
-                    })
-            })
-            .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
-            })
     };
 
     AllocsHandler.prototype.getForFacultyMember = function (req, res) {
@@ -292,13 +331,12 @@ var Checkit = require('checkit');
                 withRelated: ['allocations.group', 'allocations.subject', 'allocations.group.grade']
             })
             .then(function (facultyMember) {
-                
-                
                 if (!facultyMember) {
                     throw new Errors.NotFoundEntity("The provided faculty member id was not found");
                 }
 
                 var allocations = [];
+
                 facultyMember.related('allocations').forEach(function (alloc) {
                     var group = alloc.related('group'),
                         grade = group.related('grade'),
@@ -313,15 +351,10 @@ var Checkit = require('checkit');
                     });
                 });
 
-                res.json(allocations);
+                httpUtils.success(req, res, allocations);
             })
             .catch(function (error) {
-                res.status(500).json({
-                    error: true,
-                    data: {
-                        message: error.message
-                    }
-                });
+                httpUtils.handleGeneralError(req, res, error);
             });
     };
 
@@ -329,6 +362,6 @@ var Checkit = require('checkit');
 
     module.exports.put = handler.addAllocation;
     module.exports.getForFacultyMember = handler.getForFacultyMember;
-    module.exports.deleteForFacultyMember = handler.deleteForFacultyMember;
+    module.exports.delete = handler.removeAllocation;
     module.exports.getAvailable = handler.getAvailable;
 })();

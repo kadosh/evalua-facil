@@ -3,6 +3,7 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
 var httpUtils = require('../utils/http-utils');
+var HttpStatus = require('http-status-codes');
 
 (function () {
     var that;
@@ -28,6 +29,12 @@ var httpUtils = require('../utils/http-utils');
         return that.bimesterRepository
             .getOne({bimester_number: req.params.bimester_number})
             .then(function (bimester) {
+
+                if (!bimester) {
+                    res.status(HttpStatus.NOT_FOUND);
+                    throw new Errors.NotFoundEntity("The provided bimester number does not exist");
+                }
+
                 httpUtils.success(req, res, bimester);
             })
             .catch(function (error) {
@@ -41,14 +48,15 @@ var httpUtils = require('../utils/http-utils');
             .then(function (bimester) {
 
                 if (!bimester) {
+                    res.status(HttpStatus.NOT_FOUND);
                     throw new Errors.NotFoundEntity("The provided bimester number does not exist");
                 }
 
                 return that.bimesterRepository
                     .update({
                         id: bimester.get('id'),
-                        start_timestamp: req.body.start_timestamp,
-                        end_timestamp: req.body.end_timestamp
+                        start_timestamp: parseInt(req.body.start_timestamp),
+                        end_timestamp: parseInt(req.body.end_timestamp)
                     })
                     .then(function (updatedBimester) {
                         httpUtils.success(req, res, updatedBimester);

@@ -12,17 +12,80 @@ var out = {
     token: ''
 };
 
-before(function () {
-    mod.getMasterToken({api: api, expect: expect, it: it}, out);
+var bimesterNumber = 3;
+
+var groups = [
+    {id: 25, grade: 7, name: 'A'},
+    {id: 26, grade: 7, name: 'B'},
+    {id: 27, grade: 7, name: 'C'},
+    {id: 28, grade: 7, name: 'D'},
+    {id: 29, grade: 8, name: 'A'},
+    {id: 30, grade: 8, name: 'B'},
+    {id: 31, grade: 8, name: 'C'},
+    {id: 32, grade: 8, name: 'D'},
+    {id: 33, grade: 9, name: 'A'},
+    {id: 34, grade: 9, name: 'B'},
+    {id: 35, grade: 9, name: 'C'},
+    {id: 36, grade: 9, name: 'D'}
+];
+
+var grades = [7, 8, 9];
+
+var repoSubjects = [
+    {abbr: 'ESP', title: 'Español'},
+    {abbr: 'MAT', title: 'Matemáticas'},
+    {abbr: 'HIS', title: 'Historia'},
+    {abbr: 'ING', title: 'Inglés'},
+    {abbr: 'FCE', title: 'Formación Socio Cultural'},
+    {abbr: 'ART', title: 'Artes'},
+    {abbr: 'TEC', title: 'Tecnologías'}
+];
+
+var subjectsByGrade = [
+];
+
+var subjectCounterId = 43;
+
+for (var i = 0; i < grades.length; i++) {
+
+    var gradeSubjects = [];
+
+    for (var s = 0; s < repoSubjects.length; s++) {
+        var row = repoSubjects[s];
+
+        gradeSubjects.push({
+            id: subjectCounterId++,
+            abbr: row.abbr,
+            title: row.title
+        });
+    }
+
+    subjectsByGrade.push({
+        grade: grades[i],
+        subjects: gradeSubjects
+    });
+}
+
+var teachers = data.teachers;
+var suffix = data.suffix;
+
+teachers.forEach(function (teacher) {
+    teacher.username += suffix;
 });
 
 
-var groups = [];
+before(function () {
 
-describe('GET ALL GROUPS', function () {
+    console.log("aaaaaaaaaaaaa token");
+    mod.getMasterToken({api: api, expect: expect, it: it}, out);
+});
 
-    it("should GET all registered groups", function (done) {
-        api.get('/api/school-groups')
+describe("aaaaaaaaaa", function () {
+
+
+    it("Should get all students", function (done) {
+
+        api.get('/api/students')
             .set('Authorization', "Bearer " + out.token)
             .expect(200)
             .end(function (err, res) {
@@ -31,93 +94,85 @@ describe('GET ALL GROUPS', function () {
                     throw err;
                 }
 
-                groups = res.body;
-                expect(res.body.length).to.not.be.empty;
+                expect(res.body.data.length).to.not.be.empty;
 
-                groups.forEach(function (group) {
-                    var studentsToBeInserted = [];
-
-                    for (var i = 0; i < 20; i++) {
-                        var nameGenderPart = data.firstNames[utils.random(0, data.firstNames.length - 1)],
-                            firstName = nameGenderPart.name,
-                            mothersName = data.mothersNames[utils.random(0, data.mothersNames.length - 1)],
-                            lastName = data.lastNames[utils.random(0, data.lastNames.length - 1)];
-
-                        studentsToBeInserted.push({
-                            first_name: firstName,
-                            last_name: lastName,
-                            mothers_name: mothersName,
-                            school_group_id: group.id,
-                            gender: nameGenderPart.gender
-                        });
-                    }
-
-                    group.students = studentsToBeInserted;
-                });
+                var resultStudents = res.body.data;
 
                 done();
-                goInsert();
-            });
-    });
-});
 
-function goInsert() {
-
-    groups.forEach(function (group) {
-        describe('CREATE STUDENTS FOR GROUP: ' + group.grade_id + group.group_name, function () {
-            group.students.forEach(function (student) {
-                it("should CREATE student " + student.first_name + " " + student.last_name, function (done) {
-                    api.put('/api/students')
-                        .set('Content-Type', 'application/json')
-                        .set('Authorization', "Bearer " + out.token)
-                        .send(student)
-                        .expect(200)
-                        .end(function (err, res) {
-                            if (err) {
-                                throw err;
-                            }
-                            
-                            expect(res.body.success).to.equal(true);
-                            expect(res.body.error).to.equal(false);
-
-                            done();
-                        });
+                resultStudents.forEach(function (student) {
+                    goProcessStudent(student, student.group.grade_id);
                 });
             });
-        });
     });
+    //it("executed after first two");
+});
 
-    describe('PUT STUDENTS', function () {
-        allocsToBeInserted.forEach(function (row) {
+function randomAbsences() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0);
+}
 
-            it("should PUT " + row.allocs.length + " alloc(s) for " + row.faculty.user.username, function (done) {
-                var parsedAllocs = [];
+function randomParticipation() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+}
 
-                for (var x = 0; x < row.allocs.length; x++) {
-                    var tempAlloc = row.allocs[x];
-                    parsedAllocs.push({
-                        grade_number: tempAlloc.grade.grade_number,
-                        subject_id: tempAlloc.subject.id,
-                        school_group_id: tempAlloc.school_group.id
-                    });
-                }
+function randomPerformance() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+}
 
-                api.put('/api/allocations/faculty-member/' + row.faculty.id)
-                    .set('Content-Type', 'application/json')
+function randomReading() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+}
+
+function randomMath() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+}
+
+function randomFriendship() {
+    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+}
+
+function getSubjects(gradeNumber) {
+    for (var i = 0; i < subjectsByGrade.length; i++) {
+        if (subjectsByGrade[i].grade == gradeNumber) {
+            return subjectsByGrade[i].subjects;
+        }
+    }
+}
+
+function goProcessStudent(student, grade) {
+
+    var gradeSubjects = getSubjects(grade);
+    describe('CREATE EVALUATIONS FOR STUDENT :' + student.first_name + " " + student.last_name, function () {
+
+        gradeSubjects.forEach(function (subject) {
+            it("should PUT evaluation for student: " + student.first_name + " " + student.last_name + " for " + subject.abbr, function (done) {
+
+                api.put('/api/evaluations/bimester/' + bimesterNumber + '/student/' + student.id)
                     .set('Authorization', "Bearer " + out.token)
-                    .send(parsedAllocs)
+                    .send({
+                        absences_count: randomAbsences(),
+                        participation_score: randomParticipation(),
+                        performance_score: randomPerformance(),
+                        reading_score: randomReading(),
+                        math_score: randomMath(),
+                        friendship_score: randomFriendship(),
+                        subject_id: subject.id
+                    })
                     .expect(200)
                     .end(function (err, res) {
+
                         if (err) {
                             throw err;
                         }
 
                         expect(res.body.data).to.not.be.empty;
-                        expect(res.body.fail).to.be.empty;
+                        expect(res.body.success).to.be.equals(true)
 
                         done();
                     });
             });
         });
     });
-};
+}
+;

@@ -285,6 +285,15 @@ var Checkit = require('checkit');
         }
     };
 
+    StudentsHandler.prototype.getAll = function (req, res) {
+        return that
+            .studentRepository
+            .getAll({}, {withRelated: ['group']})
+            .then(function (students) {
+                httpUtils.success(req, res, students);
+            });
+    };
+
     StudentsHandler.prototype.getByGroup = function (req, res) {
         var principalUser = req.user,
             group_id = parseInt(req.params.school_group_id);
@@ -317,6 +326,7 @@ var Checkit = require('checkit');
 
     module.exports.put = handler.put;
     module.exports.update = handler.update;
+    module.exports.getAll = handler.getAll;
     module.exports.getByGroup = handler.getByGroup;
     module.exports.delete = handler.delete;
     module.exports.getOne = handler.getOne;

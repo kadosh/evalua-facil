@@ -1,9 +1,11 @@
 (function () {
     var utils = require('./utils');
     var authClient = "Basic d2ViY2xpZW50OnBhc3N3b3Jk";
-    var suffix = String(utils.random(0, 10)) + String(utils.random(0, 10));
+    
+    
 
     module.exports.getMasterToken = function (tApi, settings) {
+        console.log("got here");
         tApi.it('should GET master token', function (done) {
 
             tApi.api.post('/oauth/token')

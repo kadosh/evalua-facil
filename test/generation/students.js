@@ -31,8 +31,8 @@ describe('GET ALL GROUPS', function () {
                     throw err;
                 }
 
-                groups = res.body;
-                expect(res.body.length).to.not.be.empty;
+                groups = res.body.data;
+                expect(res.body.data.length).to.not.be.empty;
 
                 groups.forEach(function (group) {
                     var studentsToBeInserted = [];

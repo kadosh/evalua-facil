@@ -8,7 +8,7 @@ var should = require('chai').should,
 
 var token = "";
 var authClient = "Basic d2ViY2xpZW50OnBhc3N3b3Jk";
-var suffix = String(utils.random(0, 10)) + String(utils.random(0, 10));
+var suffix = data.suffix;
 
 
 var director = {
@@ -22,72 +22,7 @@ var director = {
     contact_number: "1010101010"
 };
 
-var teachers = [
-    {
-        first_name: "Bryan",
-        last_name: "Montes",
-        gender: "M",
-        role_title: "teacher",
-        username: "bryan.montes",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "0202020202"
-    }, {
-        first_name: "Jorge",
-        last_name: "Cortés",
-        gender: "M",
-        role_title: "teacher",
-        username: "jorge.cortes",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "03030303"
-    }, {
-        first_name: "Michel",
-        last_name: "Oviedo",
-        gender: "M",
-        role_title: "teacher",
-        username: "michel.oviedo",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "04040404"
-    }, {
-        first_name: "Alex",
-        last_name: "Ocampo",
-        gender: "M",
-        role_title: "teacher",
-        username: "alex.ocampo",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "05050505"
-    }, {
-        first_name: "Aarón",
-        last_name: "Chávez",
-        gender: "M",
-        role_title: "teacher",
-        username: "aaron.chavez",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "060606006"
-    }, {
-        first_name: "Iliana",
-        last_name: "López",
-        gender: "F",
-        role_title: "teacher",
-        username: "iliana.lopez",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "07070707"
-    }, {
-        first_name: "Hassem",
-        last_name: "Hernández",
-        gender: "M",
-        role_title: "teacher",
-        username: "hassem.hdez",
-        password: "pass.word1",
-        title: "Ing.",
-        contact_number: "0808080808"
-    }
-];
+var teachers = data.teachers;
 
 teachers.forEach(function (teacher) {
     teacher.username += suffix;
