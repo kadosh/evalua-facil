@@ -7,8 +7,10 @@ var should = require('chai').should,
     utils = require('../utils'),
     api = supertest(conf.host);
 
-var token = "";
-var authClient = "Basic d2ViY2xpZW50OnBhc3N3b3Jk";
+var out = {
+    token: ''
+};
+
 var suffix = data.suffix;
 
 
@@ -37,7 +39,7 @@ describe('FACULTY MEMBERS - Director', function () {
     it('should CREATE the director ' + director.username + ":" + director.password, function (done) {
         api.put('/api/faculty-members')
             .set('Content-Type', 'application/x-www-form-urlencoded')
-            .set('Authorization', "Bearer " + token)
+            .set('Authorization', "Bearer " + out.token)
             .send(director)
             .expect(200)
             .end(function (err, res) {
@@ -59,7 +61,7 @@ describe('FACULTY MEMBERS - Teachers', function () {
         it('should CREATE the teacher ' + teacher.username + ":" + teacher.password, function (done) {
             api.put('/api/faculty-members')
                 .set('Content-Type', 'application/x-www-form-urlencoded')
-                .set('Authorization', "Bearer " + token)
+                .set('Authorization', "Bearer " + out.token)
                 .send(teacher)
                 .expect(200)
                 .end(function (err, res) {
