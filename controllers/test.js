@@ -2,14 +2,6 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
 
-var mysql = require('mysql2');
-var connection = mysql.createConnection({
-    user: 'root',
-    password: 'pass.word1',
-    host: 'localhost',
-    database : 'evalua'
-});
-
 (function () {
     var that;
 
