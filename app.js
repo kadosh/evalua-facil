@@ -14,7 +14,7 @@ var allocationsController = require('./controllers/allocationsx');
 var bimestersController = require('./controllers/bimestersx');
 var revisionsController = require('./controllers/revisionsx');
 var testController = require('./controllers/test');
-var reportsController = require('./controllers/reportsx');
+// var reportsController = require('./controllers/reportsx');
 var evaluationsController = require('./controllers/evaluationsx');
 
 var schoolGroupsController = require('./controllers/school-groupsx');
@@ -141,8 +141,8 @@ router.route('/api/bimesters/:bimester_number')
 router.route('/api/testing')
     .get(testController.getTest);
 
-router.route('/api/reports/bimester/:bimester_number/group/:school_group_id')
-    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), reportsController.getByBimester);
+// router.route('/api/reports/bimester/:bimester_number/group/:school_group_id')
+    // .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), reportsController.getByBimester);
 
 // Register all our routes
 app.use(router);
