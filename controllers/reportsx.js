@@ -3,16 +3,9 @@ var dbContext = require('../db/models');
 var Errors = require('../utils/custom-errors');
 var repos = require('../db/repositories');
 var httpUtils = require('../utils/http-utils');
+var mysql = require('mysql2');
 
 var config = require('../env')[process.env.NODE_ENV || 'development'];
-
-var mysql = require('mysql2');
-var connection = mysql.createConnection({
-    user: config.DB_USER,
-    password: config.DB_PASSWORD,
-    host: config.DB_HOST,
-    database: config.DB_NAME
-});
 
 (function () {
     var that;
@@ -23,6 +16,14 @@ var connection = mysql.createConnection({
     };
 
     ReportsHandler.prototype.getByBimester = function (req, res) {
+        
+        var connection = mysql.createConnection({
+            user: config.DB_USER,
+            password: config.DB_PASSWORD,
+            host: config.DB_HOST,
+            database: config.DB_NAME
+        });
+        
         var bimester_number = parseInt(req.params.bimester_number),
             school_group_id = parseInt(req.params.school_group_id);
 
@@ -78,6 +79,7 @@ var connection = mysql.createConnection({
                                                     function (err, rows) {
                                                         result.friendship = rows;
                                                         httpUtils.success(req, res, result);
+                                                        connection.close();
                                                         return;
                                                     }
                                                 );
@@ -92,6 +94,7 @@ var connection = mysql.createConnection({
             }
         );
 
+        connection.close();
         httpUtils.handleGeneralError(req, res, new Errors.StoredProcedureCallError());
     };
 
