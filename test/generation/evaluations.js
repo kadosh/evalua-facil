@@ -110,23 +110,23 @@ function randomAbsences() {
 }
 
 function randomParticipation() {
-    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+    return Math.floor(Math.random() * (100) + 1);
 }
 
 function randomPerformance() {
-    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+    return Math.floor(Math.random() * (100) + 1);
 }
 
 function randomReading() {
-    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+    return Math.floor(Math.random() * (100) + 1);
 }
 
 function randomMath() {
-    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+    return Math.floor(Math.random() * (100) + 1);
 }
 
 function randomFriendship() {
-    return Math.floor(Math.random() * (10 - 0 + 1) + 0) / 10;
+    return Math.floor(Math.random() * (100) + 1);
 }
 
 function getSubjects(gradeNumber) {

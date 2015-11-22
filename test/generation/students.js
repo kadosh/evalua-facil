@@ -36,7 +36,7 @@ describe('GET ALL GROUPS', function () {
                 groups.forEach(function (group) {
                     var studentsToBeInserted = [];
 
-                    for (var i = 0; i < 20; i++) {
+                    for (var i = 0; i < 15; i++) {
                         var nameGenderPart = data.firstNames[utils.random(0, data.firstNames.length - 1)],
                             firstName = nameGenderPart.name,
                             mothersName = data.mothersNames[utils.random(0, data.mothersNames.length - 1)],

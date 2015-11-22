@@ -15,5 +15,8 @@
 
     var knex = require('knex')(dbConfig);
     var bookshelf = require('bookshelf')(knex);
-    module.exports = bookshelf;
+    module.exports = {
+        bookshelf: bookshelf,
+        knex: knex
+    };
 })();

@@ -59,8 +59,9 @@ var bcrypt = require('bcryptjs');
 
                     final.push({
                         id: facultyMember.get('id'),
-                        user_data: facultyMember.related('user').omit(['password_hash']),
+                        user_data: facultyMember.related('user').omit(['password_hash', 'is_locked']),
                         first_name: facultyMember.get('first_name'),
+                        is_locked: facultyMember.related('user').get('is_locked'),
                         last_name: facultyMember.get('last_name'),
                         role_title: role.get('title'),
                         title: facultyMember.get('title'),
@@ -179,7 +180,7 @@ var bcrypt = require('bcryptjs');
                 id: req.params.faculty_member_id
             })
             .then(function (facultyMember) {
-
+                console.log(facultyMember);
                 if (!facultyMember) {
                     throw new Errors.NotFoundEntity("The requested faculty member id was not found");
                 }

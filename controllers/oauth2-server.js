@@ -2,6 +2,7 @@ var oauth2orize = require('oauth2orize')
     , passport = require('passport')
     , dbContext = require('../db/models')
     , crypto = require('crypto')
+    , Errors = require('../utils/custom-errors')
     , bcrypt = require('bcryptjs');
 
 // create OAuth 2.0 server
@@ -17,9 +18,17 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
         .fetch()
         .then(function (user) {
 
+            if(!user){
+                return done(new Errors.InvalidCredentialsError(), false);
+            }
+        
             // Compare the passwords
             if (!bcrypt.compareSync(password, user.get('password_hash'))) {
-                return done(null, false);
+                return done(new Errors.InvalidCredentialsError(), false);
+            }
+
+            if (user.get('is_locked') == 1) {
+                return done(new Errors.LockedUserError(), false);
             }
 
             var token = uid(256);

@@ -627,7 +627,7 @@ var Errors = require('../utils/custom-errors');
     };
 
     AltRevisionRepository.prototype.insert = function (revision) {
-        return dbContext.Bookshelf.transaction(function (t) {
+        return dbContext.bookshelf.Bookshelf.transaction(function (t) {
             return dbContext.AltRevision
                 .forge()
                 .save({
@@ -732,7 +732,7 @@ var Errors = require('../utils/custom-errors');
     };
 
     UserRepository.prototype.lockUser = function (user_id) {
-        saveOptions = saveOptions || {};
+
         return dbContext.User
             .forge({
                 id: user_id
@@ -743,7 +743,7 @@ var Errors = require('../utils/custom-errors');
     };
 
     UserRepository.prototype.unlockUser = function (user_id) {
-        saveOptions = saveOptions || {};
+
         return dbContext.User
             .forge({
                 id: user_id

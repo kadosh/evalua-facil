@@ -1,8 +1,11 @@
 (function () {
-    var bookshelf = require('./bookshelf');
+    var db = require('./bookshelf');
     var Checkit = require('checkit');
+    
+    var bookshelf = db.bookshelf;
 
     module.exports.Bookshelf = bookshelf;
+    module.exports.knex = db.knex;
 
     module.exports.Student = bookshelf.Model.extend({
         tableName: 'students',
@@ -69,7 +72,7 @@
             return this.hasOne(module.exports.FacultyMember);
         },
         initialize: function () {
-            this.on('saving', this.validateSave);
+            // this.on('saving', this.validateSave);
         },
         validateSave: function (a) {
             return this.validate.run(this.attributes)
