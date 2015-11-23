@@ -14,7 +14,7 @@ var allocationsController = require('./controllers/allocationsx');
 var bimestersController = require('./controllers/bimestersx');
 var revisionsController = require('./controllers/revisionsx');
 var testController = require('./controllers/test');
-//var reportsController = require('./controllers/reportsx');
+var reportsController = require('./controllers/reportsx');
 var evaluationsController = require('./controllers/evaluationsx');
 
 var schoolGroupsController = require('./controllers/school-groupsx');
@@ -56,7 +56,11 @@ router.route('/api/faculty-members')
 
 router.route('/api/faculty-members/:faculty_member_id')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.getOne)
+    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.delete)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.update);
+
+router.route('/api/faculty-members/:faculty_member_id/change-password')
+    .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.changePassword);
 
 router.route('/api/faculty-members/:faculty_member_id/deactivate')
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), facultyMembersController.deactivate);
@@ -67,14 +71,20 @@ router.route('/api/faculty-members/:faculty_member_id/activate')
 router.route('/api/account/me')
     .get(oauthStrategies.isBearerAuthenticated, accountController.getMe);
 
+router.route('/api/account/change-password')
+    .put(oauthStrategies.isBearerAuthenticated, accountController.changePassword);
+
 // Api endpoints for School Groups
 router.route('/api/school-groups/in-grade-number/:grade_number')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.getAllByGradeNumber);
+
 router.route('/api/school-groups/')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.getAll)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.put);
+
 router.route('/api/school-groups/:group_id')
     .get(oauthStrategies.isBearerAuthenticated, schoolGroupsController.getOne)
+    .delete(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.delete)
     .put(oauthStrategies.isBearerAuthenticated, schoolGroupsController.update);
 
 // Api endpoints for Subjects
@@ -141,8 +151,8 @@ router.route('/api/bimesters/:bimester_number')
 router.route('/api/testing')
     .get(testController.getTest);
 
-//router.route('/api/reports/bimester/:bimester_number/group/:school_group_id')
-//    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), reportsController.getByBimester);
+router.route('/api/reports/bimester/:bimester_number/group/:school_group_id')
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), reportsController.getByBimester);
 
 // Register all our routes
 app.use(router);

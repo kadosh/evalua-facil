@@ -15,6 +15,69 @@ var bcrypt = require('bcryptjs');
         that.roleRepository = new repos.RoleRepository();
     };
 
+    FacultyMembersHandler.prototype.delete = function (req, res) {
+        var faculty_member_id = parseInt(req.params.faculty_member_id);
+
+        return that.facultyMemberRepository
+            .getOne({id: faculty_member_id}, {
+                withRelated: ['user']
+            })
+            .then(function (facultyMember) {
+
+                if (!facultyMember) {
+                    throw new Errors.NotFoundEntity("The requested faculty member id was not found");
+                }
+
+                var user = facultyMember.related('user');
+
+                return that.userRepository
+                    .delete(user.get('id'))
+                    .then(function () {
+                        httpUtils.success(req, res, {});
+                    });
+            })
+            .catch(function (error) {
+                httpUtils.handleGeneralError(req, res, error);
+            });
+    };
+
+    FacultyMembersHandler.prototype.changePassword = function (req, res) {
+
+        var new_password = req.body.new_password,
+            confirm_password = req.body.confirm_password,
+            faculty_member_id = parseInt(req.params.faculty_member_id);
+
+        return that.facultyMemberRepository
+            .getOne({id: faculty_member_id}, {withRelated: ['user']})
+            .then(function (facultyMember) {
+
+                if (!facultyMember) {
+                    throw new Errors.NotFoundEntity("The requested faculty member id was not found");
+                }
+
+                var user = facultyMember.related('user');
+
+                var hashed_new_password = bcrypt.hashSync(new_password);
+
+                if (new_password != confirm_password) {
+                    httpUtils.handleGeneralError(req, res, new Errors.PasswordAndPasswordConfirmationDoesntMatchError());
+                    return;
+                }
+
+                return that.userRepository
+                    .update(user.get('id'), hashed_new_password, {})
+                    .then(function () {
+                        httpUtils.success(req, res, {});
+                    })
+                    .catch(function (error) {
+                        httpUtils.handleGeneralError(req, res, error);
+                    });
+            })
+            .catch(function (error) {
+                httpUtils.handleGeneralError(req, res, error);
+            });
+    };
+
     FacultyMembersHandler.prototype.getOne = function (req, res) {
         return that.facultyMemberRepository
             .getOne({id: req.params.faculty_member_id}, {withRelated: ['user.role']})
@@ -226,6 +289,7 @@ var bcrypt = require('bcryptjs');
     module.exports.update = handler.update;
     module.exports.activate = handler.activate;
     module.exports.deactivate = handler.deactivate;
-
+    module.exports.delete = handler.delete;
+    module.exports.changePassword = handler.changePassword;
 })();
 

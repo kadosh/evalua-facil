@@ -405,6 +405,15 @@ var Errors = require('../utils/custom-errors');
             }, saveOptions);
     };
 
+    GroupRepository.prototype.delete = function (id, deleteOptions) {
+        deleteOptions = deleteOptions || {};
+        return dbContext.SchoolGroup
+            .forge({
+                id: id
+            })
+            .destroy();
+    };
+
     module.exports.GroupRepository = GroupRepository;
 })();
 
@@ -518,11 +527,11 @@ var Errors = require('../utils/custom-errors');
             .forge(query)
             .destroy();
     };
-    
+
     AllocationRepository.prototype.deleteById = function (id, deleteOptions) {
         deleteOptions = deleteOptions || {};
         return dbContext.Allocation
-            .forge({ id : id})
+            .forge({id: id})
             .destroy();
     };
 
@@ -712,6 +721,15 @@ var Errors = require('../utils/custom-errors');
             }, saveOptions);
     };
 
+    FacultyMemberRepository.prototype.delete = function (id, deleteOptions) {
+        deleteOptions = deleteOptions || {};
+        return dbContext.FacultyMember
+            .forge({
+                id: id
+            })
+            .destroy();
+    };
+
     module.exports.FacultyMemberRepository = FacultyMemberRepository;
 })();
 
@@ -762,7 +780,23 @@ var Errors = require('../utils/custom-errors');
                 password_hash: data.password_hash,
                 role_id: data.role_id
             }, saveOptions);
-    }
+    };
+
+    UserRepository.prototype.update = function (id, password_hash, saveOptions) {
+        saveOptions = saveOptions || {};
+        return dbContext.User
+            .forge({id: id})
+            .save({
+                password_hash: password_hash
+            }, saveOptions);
+    };
+
+    UserRepository.prototype.delete = function (id, deleteOptions) {
+        deleteOptions = deleteOptions || {};
+        return dbContext.User
+            .forge({id: id})
+            .destroy();
+    };
 
     module.exports.UserRepository = UserRepository;
 })();

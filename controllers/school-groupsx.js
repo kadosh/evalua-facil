@@ -133,11 +133,34 @@ var httpUtils = require('../utils/http-utils');
             });
     };
 
+    GroupsHandler.prototype.delete = function (req, res) {
+        var group_id = parseInt(req.params.group_id);
+
+        return that.groupRepository
+            .findById(group_id)
+            .then(function (schoolGroup) {
+
+                if (!schoolGroup) {
+                    throw new Errors.EntityExistsError("The provided group_id does not exist");
+                }
+
+                return that.groupRepository
+                    .delete(group_id)
+                    .then(function () {
+                        httpUtils.success(req, res, {});
+                    });
+            })
+            .catch(function (error) {
+                httpUtils.handleGeneralError(req, res, error);
+            });
+    };
+
     var handler = new GroupsHandler();
 
     module.exports.getAllByGradeNumber = handler.getAllByGradeNumber;
     module.exports.put = handler.put;
     module.exports.update = handler.update;
+    module.exports.delete = handler.delete;
     module.exports.getOne = handler.getOne;
     module.exports.getAll = handler.getAll;
 })();

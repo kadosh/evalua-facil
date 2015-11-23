@@ -122,6 +122,18 @@
 
     module.exports.InvalidCredentialsError = InvalidCredentialsError;
 
+    function InvalidCurrentPasswordError(message) {
+        this.name = 'InvalidCurrentPasswordError';
+        this.code = this.name;
+        this.message = message || "Invalid current password.";
+        this.stack = (new Error()).stack;
+    }
+
+    InvalidCurrentPasswordError.prototype = Object.create(Error.prototype);
+    InvalidCurrentPasswordError.prototype.constructor = InvalidCurrentPasswordError;
+
+    module.exports.InvalidCurrentPasswordError = InvalidCurrentPasswordError;
+
     function StoredProcedureCallError(message) {
         this.name = 'StoredProcedureCallError';
         this.code = this.name;
@@ -133,4 +145,16 @@
     StoredProcedureCallError.prototype.constructor = StoredProcedureCallError;
 
     module.exports.StoredProcedureCallError = StoredProcedureCallError;
+
+    function PasswordAndPasswordConfirmationDoesntMatchError(message) {
+        this.name = 'PasswordAndPasswordConfirmationDoesntMatchError';
+        this.code = this.name;
+        this.message = message || "The new password and the password confirmation doesn't match.";
+        this.stack = (new Error()).stack;
+    }
+
+    PasswordAndPasswordConfirmationDoesntMatchError.prototype = Object.create(Error.prototype);
+    PasswordAndPasswordConfirmationDoesntMatchError.prototype.constructor = PasswordAndPasswordConfirmationDoesntMatchError;
+
+    module.exports.PasswordAndPasswordConfirmationDoesntMatchError = PasswordAndPasswordConfirmationDoesntMatchError;
 })();

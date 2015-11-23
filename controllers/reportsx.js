@@ -7,6 +7,7 @@ var mysql = require('mysql2');
 
 var config = require('../env')[process.env.NODE_ENV || 'development'];
 
+
 (function () {
     var that;
 
@@ -16,14 +17,14 @@ var config = require('../env')[process.env.NODE_ENV || 'development'];
     };
 
     ReportsHandler.prototype.getByBimester = function (req, res) {
-        
+
         var connection = mysql.createConnection({
             user: config.DB_USER,
             password: config.DB_PASSWORD,
             host: config.DB_HOST,
             database: config.DB_NAME
         });
-        
+
         var bimester_number = parseInt(req.params.bimester_number),
             school_group_id = parseInt(req.params.school_group_id);
 
@@ -94,8 +95,7 @@ var config = require('../env')[process.env.NODE_ENV || 'development'];
             }
         );
 
-        connection.close();
-        httpUtils.handleGeneralError(req, res, new Errors.StoredProcedureCallError());
+        //httpUtils.handleGeneralError(req, res, new Errors.StoredProcedureCallError());
     };
 
     var handler = new ReportsHandler();
