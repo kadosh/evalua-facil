@@ -79,7 +79,7 @@ router.route('/api/school-groups/in-grade-number/:grade_number')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.getAllByGradeNumber);
 
 router.route('/api/school-groups/')
-    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.getAll)
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), schoolGroupsController.getAll)
     .put(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), schoolGroupsController.put);
 
 router.route('/api/school-groups/:group_id')
