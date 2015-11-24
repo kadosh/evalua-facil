@@ -142,7 +142,7 @@ router.route('/api/evaluations/bimester/:bimester_number/student/:student_id')
 
 // Api endpoints for Bimesters
 router.route('/api/bimesters')
-    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), bimestersController.getAll);
+    .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director", "teacher"]), bimestersController.getAll);
 
 router.route('/api/bimesters/:bimester_number')
     .get(oauthStrategies.isBearerAuthenticated, oauthStrategies.checkRole(["director"]), bimestersController.getOne)
