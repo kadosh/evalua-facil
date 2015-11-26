@@ -1,4 +1,5 @@
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_absences_count_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_absences_count_bim`(
 	IN p_school_group_id INT,
     IN p_bimester_number INT
@@ -42,7 +43,7 @@ BEGIN
     SELECT indicator_id, input_value, t.student_id
     FROM student_evaluation_details
 		JOIN tmpEvaluations t ON 
-			student_evaluation_details.student_evaluation_id = t.student_id
+			student_evaluation_details.student_evaluation_id = t.id
 	WHERE indicator_id = 1;
     
     INSERT INTO tmpFinal (item, count, ratio)
@@ -70,6 +71,7 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_friendship_score_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_friendship_score_bim`(
 	IN p_school_group_id INT,
         IN p_bimester_number INT
@@ -144,6 +146,7 @@ DELIMITER ;
 
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_math_score_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_math_score_bim`(
 	IN p_school_group_id INT,
     IN p_bimester_number INT
@@ -215,6 +218,7 @@ DELIMITER ;
 
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_participation_score_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_participation_score_bim`(
 	IN p_school_group_id INT,
     IN p_bimester_number INT
@@ -286,6 +290,7 @@ DELIMITER ;
 
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_performance_score_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_performance_score_bim`(
 	IN p_school_group_id INT,
     IN p_bimester_number INT
@@ -357,6 +362,7 @@ DELIMITER ;
 
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS `evalua`.`get_reading_score_bim`;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_reading_score_bim`(
 	IN p_school_group_id INT,
     IN p_bimester_number INT
